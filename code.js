@@ -8,12 +8,17 @@ var colorGreen = "#a8ee3e";
 
 window.onload = function(){
     canvas = document.getElementById('drawingCanvas');
+
+    var v = viewport();
+    canvas.width  = v.width - 20;
+    canvas.height = v.height - 100;
+
     context = canvas.getContext("2d");
 
     context.strokeStyle = "#df4b26";
     context.lineJoin = "round";
     context.lineCap = "round";
-    context.lineWidth = 250;
+    context.lineWidth = 20;
    
     if("ontouchstart" in window){
         log("init touch");
@@ -29,8 +34,6 @@ window.onload = function(){
     }
 
     log("initialized");
-    var v = viewport();
-    log(v.width + " - " + v.height);
 };
 
 //TOUCH
@@ -136,7 +139,7 @@ var lastRefY;
 var lastX;
 var lastY;
 
-var distanceThreshold = 1.5;
+var distanceThreshold = 2;
 
 function movePen(x, y){
     if(drawing){
