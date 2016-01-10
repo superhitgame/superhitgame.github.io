@@ -13,7 +13,7 @@ window.onload = function(){
     context.strokeStyle = "#df4b26";
     context.lineJoin = "round";
     context.lineCap = "round";
-    context.lineWidth = 10;
+    context.lineWidth = 14;
    
     if("ontouchstart" in window){
         log("init touch");
@@ -214,10 +214,10 @@ function redraw(){
                 context.lineTo(penX[i], penY[i]);
             }
         } else if(i < penX.length - 1 && penDragging[i + 1]){
-            var xc = (penX[i] + penX[i + 1]) / 2;
-            var yc = (penY[i] + penY[i + 1]) / 2;
-            context.quadraticCurveTo(penX[i], penY[i], xc, yc);
-            //context.lineTo(penX[i], penY[i]);
+            //var xc = (penX[i] + penX[i + 1]) / 2;
+            //var yc = (penY[i] + penY[i + 1]) / 2;
+            //context.quadraticCurveTo(penX[i], penY[i], xc, yc);
+            context.lineTo(penX[i], penY[i]);
         } else {
             context.lineTo(penX[i], penY[i]);
         }
