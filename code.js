@@ -258,6 +258,10 @@ function redraw(){
             context.lineTo(penX[i], penY[i]);
         }
     }
+    if(dragging){
+        context.lineTo(lastX, lastY);
+    }
+
     context.stroke();
 }
 
