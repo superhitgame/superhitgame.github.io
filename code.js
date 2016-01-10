@@ -107,7 +107,7 @@ function startPen(x, y){
     lastY = y;
     currentX = x;
     currentY = y;
-    preDraw();
+    //preDraw();
     //debugDraw(x, y, 'start');
 }
 
@@ -154,7 +154,7 @@ function movePen(x, y){
                 lastRefX = lastX;
                 lastRefY = lastY;
                 penDragging.push(true);   
-                redraw();
+                //redraw();
                 //debugDraw(lastX, lastY, 'move');
             } else {
                 //debugDraw(lastX, lastY, 'move', true);
@@ -170,8 +170,8 @@ function movePen(x, y){
         lastY = currentY;
         currentX = x;
         currentY = y;
-        //redraw();
-        preDraw();
+        redraw();
+        //preDraw();
     }
 }
 
@@ -208,7 +208,8 @@ function preDraw(){
 function redraw(){
     context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
     context.beginPath();
-    context.strokeStyle = colorGrey;
+    //context.strokeStyle = colorGrey;
+    context.strokeStyle = colorRed;
     for(var i = 0; i < penX.length; i++){
         //context.moveTo(penX[i]-1, penY[i]);
         //context.lineTo(penX[i], penY[i]);
@@ -231,6 +232,7 @@ function redraw(){
     }
     context.stroke();
 
+    /*
     context.beginPath();
     context.strokeStyle = colorRed;
     for(var i = 0; i < penX.length; i++){
@@ -238,6 +240,7 @@ function redraw(){
         context.lineTo(penX[i], penY[i]);
     }
     context.stroke();
+    */
 }
 
 function distanceToLine(x0, y0, x1, y1, x2, y2){
