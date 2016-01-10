@@ -122,7 +122,7 @@ function stopPen(x, y){
     drawing = false;
     dragging = false;
     counter = 0;
-    //redraw();
+    redraw();
     
     //var myJsonString = JSON.stringify(penX);
     //log(myJsonString);
@@ -141,7 +141,6 @@ var distanceThreshold = 1.5;
 function movePen(x, y){
     if(drawing){
         dragging = true;
-        /*
         if(counter == 0){
             lastRefX = penX[penX.length - 1];
             lastRefY = penY[penY.length - 1];
@@ -152,13 +151,12 @@ function movePen(x, y){
                 lastRefX = lastX;
                 lastRefY = lastY;
                 penDragging.push(true);   
-                //redraw();
+                redraw();
                 //debugDraw(lastX, lastY, 'move');
             } else {
                 //debugDraw(lastX, lastY, 'move', true);
             }
         }
-        */
 
         lastX = x;    
         lastY = y;
@@ -238,7 +236,7 @@ function distanceToLine(x0, y0, x1, y1, x2, y2){
 
 function log(text){
     console.log(text);
-    document.getElementById("log").innerHTML = text + "<br>" + document.getElementById("log").innerHTML;
+    //document.getElementById("log").innerHTML = text + "<br>" + document.getElementById("log").innerHTML;
 };
 
 function viewport(){
