@@ -45,10 +45,7 @@ function handleTouchStart(e) {
 function handleTouchEnd(e) {
     e.preventDefault();
     log("touch end");
-    var touch = e.touches[0];
-    alert(touch);
-    alert(touch.pageX);
-    stopPen(touch.pageX - canvas.offsetLeft, touch.pageY - canvas.offsetTop);
+    stopPen();
 }
 
 function handleTouchMove(e) {
@@ -114,7 +111,7 @@ function stopPen(x, y){
     //log(canvas.toDataURL());
     //document.write('<img src="' + canvas.toDataURL('image/jpeg') + '"/>');
     log("Points registered: " + penX.length);
-    if(dragging){
+    if(typeof x !== 'undefined' && dragging){
         penX.push(x);
         penY.push(y);
         penDragging.push(true);
