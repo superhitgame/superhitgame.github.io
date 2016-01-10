@@ -45,7 +45,8 @@ function handleTouchStart(e) {
 function handleTouchEnd(e) {
     e.preventDefault();
     log("touch end");
-    stopPen();
+    //We don't have any touch right here anymore
+    stopPen(lastX, lastY);
 }
 
 function handleTouchMove(e) {
@@ -111,7 +112,7 @@ function stopPen(x, y){
     //log(canvas.toDataURL());
     //document.write('<img src="' + canvas.toDataURL('image/jpeg') + '"/>');
     log("Points registered: " + penX.length);
-    if(typeof x !== 'undefined' && dragging){
+    if(dragging){
         penX.push(x);
         penY.push(y);
         penDragging.push(true);
