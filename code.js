@@ -13,7 +13,7 @@ window.onload = function(){
     context.strokeStyle = "#df4b26";
     context.lineJoin = "round";
     context.lineCap = "round";
-    context.lineWidth = 5;
+    context.lineWidth = 10;
    
     if("ontouchstart" in window){
         log("init touch");
