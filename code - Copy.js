@@ -104,7 +104,7 @@ function startPen(x, y){
     lastY = y;
     currentX = x;
     currentY = y;
-    preDraw();
+    //preDraw();
     //debugDraw(x, y, 'start');
 }
 
@@ -141,7 +141,6 @@ var distanceThreshold = 1.5;
 function movePen(x, y){
     if(drawing){
         dragging = true;
-        /*
         if(counter == 0){
             lastRefX = penX[penX.length - 1];
             lastRefY = penY[penY.length - 1];
@@ -158,7 +157,6 @@ function movePen(x, y){
                 //debugDraw(lastX, lastY, 'move', true);
             }
         }
-        */
 
         lastX = x;    
         lastY = y;
@@ -175,6 +173,31 @@ function movePen(x, y){
 }
 
 //END TEMP
+
+/*
+function movePen(x, y){
+    if(drawing){
+        dragging = true;
+        if(counter >= 10){
+            penX.push(x);
+            penY.push(y);
+            penDragging.push(true);
+            counter = 0;
+            //redraw();
+            debugDraw(x, y, 'move');
+        } else {
+            debugDraw(x, y, 'move', true);
+        }
+        counter++;
+
+        lastX = currentX;
+        lastY = currentY;
+        currentX = x;
+        currentY = y;
+        //preDraw();
+    }
+}
+*/
 
 function debugDraw(x, y, type, dropped){
     if(dropped){
@@ -230,6 +253,103 @@ function redraw(){
 
     context.stroke();
 }
+
+
+//NORMAL
+/*
+function redraw(){
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
+  
+    for(var i = 0; i < penX.length; i++){
+        context.beginPath();
+        if(i > 0 && penDragging[i]){
+            context.moveTo(penX[i-1], penY[i-1]);
+        } else {
+            //create small offset to draw point
+            context.moveTo(penX[i]-1, penY[i]);
+        }
+        context.lineTo(penX[i], penY[i]);
+        context.closePath();
+        context.stroke();
+    }
+}
+*/
+
+
+/*
+var drawing = false;
+var penEvents = new Array();
+
+function startPen(x, y){
+    drawing = true;
+    penEvents.push({x: x, y: y, dragging: false});
+    redraw();
+}
+
+function stopPen(x, y){
+    drawing = false;
+}
+
+function movePen(x, y){
+    if(drawing){
+        penEvents.push({x: x, y: y, dragging: true});
+        redraw();
+    }
+}
+
+function redraw(){
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
+  
+    context.strokeStyle = "#df4b26";
+    context.lineJoin = "round";
+    context.lineWidth = 5;
+
+    var previousPenEvent;
+    penEvents.forEach(function(penEvent){
+        context.beginPath();
+        log(penEvent);
+        if(previousPenEvent && penEvent.dragging){
+            log("previous");
+            context.moveTo(previousPenEvent.x, previousPenEvent.y);
+        } else {
+            //create small offset to draw point
+            context.moveTo(penEvent.x - 1, penEvent.y);
+        }
+        context.lineTo(penEvent.x, penEvent.y);
+        context.closePath();
+        context.stroke();
+        previousPenEvent = penEvent;
+    });
+}
+*/
+
+
+//TOUCH
+/*
+function handleTouchStart(e) {
+    e.preventDefault();
+    log("touchstart.");
+    var touch = e.changedTouches[0];
+}
+
+function handleTouchEnd(e) {
+    e.preventDefault();
+    log("touchend.");
+    var touch = e.changedTouches[0];
+}
+
+function handleTouchCancel(e) {
+    e.preventDefault();
+    log("touchcancel.");
+    var touch = e.changedTouches[0];
+}
+
+function handleTouchMove(e) {
+    e.preventDefault();
+    log("touchmove.");
+    var touch = e.changedTouches[0];
+}
+*/
 
 function distanceToLine(x0, y0, x1, y1, x2, y2){
     return Math.abs((y2 - y1)*x0 - (x2 - x1)*y0 + x2*y1 - y2*x1) / Math.sqrt((y2 - y1)*(y2 - y1) + (x2 - x1)*(x2 - x1));
