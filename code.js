@@ -205,6 +205,7 @@ function preDraw(){
 function redraw(){
     context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
     context.beginPath();
+    context.strokeStyle = colorGrey;
     for(var i = 0; i < penX.length; i++){
         //context.moveTo(penX[i]-1, penY[i]);
         //context.lineTo(penX[i], penY[i]);
@@ -225,7 +226,14 @@ function redraw(){
     if(dragging){
         context.lineTo(lastX, lastY);
     }
+    context.stroke();
 
+    context.beginPath();
+    context.strokeStyle = colorRed;
+    for(var i = 0; i < penX.length; i++){
+        context.moveTo(penX[i]-1, penY[i]);
+        context.lineTo(penX[i], penY[i]);
+    }
     context.stroke();
 }
 
