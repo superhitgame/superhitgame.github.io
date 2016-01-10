@@ -46,6 +46,8 @@ function handleTouchEnd(e) {
     e.preventDefault();
     log("touch end");
     var touch = e.touches[0];
+    alert(touch);
+    alert(touch.pageX);
     stopPen(touch.pageX - canvas.offsetLeft, touch.pageY - canvas.offsetTop);
 }
 
