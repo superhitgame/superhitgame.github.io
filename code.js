@@ -25,14 +25,49 @@ window.onload = function(){
     canvas.addEventListener("touchmove", handleTouchMove, false);
     */
 
-    canvas.addEventListener("mousedown", handleStart, false);
-    canvas.addEventListener("mouseup", handleEnd, false);
-    canvas.addEventListener("mousemove", handleMove, false);
+    if("ontouchstart" in window){
+        alert("init touch");
+        canvas.addEventListener("touchstart", handleTouchStart, false);
+        canvas.addEventListener("touchend", handleTouchEnd, false);
+        canvas.addEventListener("touchcancel", handleTouchCancel, false);
+        canvas.addEventListener("touchmove", handleTouchMove, false);
+    } else {
+        alert("init mouse");
+        canvas.addEventListener("mousedown", handleStart, false);
+        canvas.addEventListener("mouseup", handleEnd, false);
+        canvas.addEventListener("mousemove", handleMove, false);
+    }
 
     log("initialized");
     var v = viewport();
     log(v.width + " - " + v.height);
 };
+
+//TOUCH
+
+function handleToucjStart(e) {
+    e.preventDefault();
+    var touch = e.touches[0];
+    startPen(touch.pageX - canvas.offsetLeft, touch.pageY - canvas.offsetTop);
+}
+
+function handleTouchEnd(e) {
+    e.preventDefault();
+    var touch = e.touches[0];
+    stopPen(touch.pageX - canvas.offsetLeft, touch.pageY - canvas.offsetTop);
+}
+
+function handleTouchMove(e) {
+    e.preventDefault();
+    var touch = e.touches[0];
+    movePen(touch.pageX - canvas.offsetLeft, touch.pageY - canvas.offsetTop);
+}
+
+function handleTouchCancel(e){
+    e.preventDefault();
+    alert("touch cancel");
+}
+
 
 //MOUSE
 
