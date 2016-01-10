@@ -133,7 +133,7 @@ function stopPen(x, y){
     drawing = false;
     dragging = false;
     counter = 0;
-    redraw();
+    //redraw();
     
     //var myJsonString = JSON.stringify(penX);
     //log(myJsonString);
@@ -178,8 +178,8 @@ function movePen(x, y){
         lastY = currentY;
         currentX = x;
         currentY = y;
-        redraw();
-        //preDraw();
+        //redraw();
+        preDraw();
     }
 }
 
