@@ -26,13 +26,13 @@ window.onload = function(){
     */
 
     if("ontouchstart" in window){
-        alert("init touch");
+        log("init touch");
         canvas.addEventListener("touchstart", handleTouchStart, false);
         canvas.addEventListener("touchend", handleTouchEnd, false);
         canvas.addEventListener("touchcancel", handleTouchCancel, false);
         canvas.addEventListener("touchmove", handleTouchMove, false);
     } else {
-        alert("init mouse");
+        log("init mouse");
         canvas.addEventListener("mousedown", handleStart, false);
         canvas.addEventListener("mouseup", handleEnd, false);
         canvas.addEventListener("mousemove", handleMove, false);
@@ -45,27 +45,30 @@ window.onload = function(){
 
 //TOUCH
 
-function handleToucjStart(e) {
+function handleTouchStart(e) {
     e.preventDefault();
+    log("touch start");
     var touch = e.touches[0];
     startPen(touch.pageX - canvas.offsetLeft, touch.pageY - canvas.offsetTop);
 }
 
 function handleTouchEnd(e) {
     e.preventDefault();
+    log("touch end");
     var touch = e.touches[0];
     stopPen(touch.pageX - canvas.offsetLeft, touch.pageY - canvas.offsetTop);
 }
 
 function handleTouchMove(e) {
     e.preventDefault();
+    log("touch move");
     var touch = e.touches[0];
     movePen(touch.pageX - canvas.offsetLeft, touch.pageY - canvas.offsetTop);
 }
 
 function handleTouchCancel(e){
     e.preventDefault();
-    alert("touch cancel");
+    log("touch cancel");
 }
 
 
@@ -119,7 +122,7 @@ function startPen(x, y){
 function stopPen(x, y){
     //log(canvas.toDataURL());
     //document.write('<img src="' + canvas.toDataURL('image/jpeg') + '"/>');
-    log(penX.length);
+    log("Points registered: " + penX.length);
     if(dragging){
         penX.push(x);
         penY.push(y);
@@ -208,7 +211,6 @@ function movePen(x, y){
 */
 
 function debugDraw(x, y, type, dropped){
-    log(penX.length);
     if(dropped){
         context.strokeStyle = colorGrey;
     } else if(type == 'start'){
@@ -363,6 +365,7 @@ function distanceToLine(x0, y0, x1, y1, x2, y2){
 
 function log(text){
     console.log(text);
+    document.getElementById("log").innerHTML = text + "<br>" + document.getElementById("log").innerHTML;
 };
 
 function viewport(){
