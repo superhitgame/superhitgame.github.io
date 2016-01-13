@@ -1,6 +1,8 @@
+var board;
+
 window.onload = function(){
     var visibleCanvas = document.getElementById('drawingCanvas');
-    var board = new Board(visibleCanvas);
+    board = new Board(visibleCanvas);
     var inputArea = new InputArea(visibleCanvas, board);
     var v = viewport();
     //canvas.width  = v.width - 20;
@@ -14,6 +16,10 @@ window.onload = function(){
         board.reset();
     });
 
+    document.getElementById("roundButton").addEventListener("click", function() {
+        board.round();
+    });
+
     document.getElementById("infoButton").addEventListener("click", function() {
         alert("Total points: " + board.normalizedPenX.length);
     });
@@ -23,7 +29,10 @@ var NORMALIZED_WIDTH = 1;
 var NORMALIZED_HEIGHT = 1.5;
 var NORMALIZED_PEN_WIDTH = 0.05;
 var SAMPLE_DISTANCE_THRESHOLD = 0.02;
-var HOOK_THRESHOLD = 120 * Math.PI / 180;
+var SAMPLE_HOOK_THRESHOLD = 30 * Math.PI / 180;
+var HOOK_THRESHOLD = 100 * Math.PI / 180;
+var ROUNDING_FACTOR_X = 1000;
+var ROUNDING_FACTOR_Y = 1000;
 
 var BLACK = "#000000";
 var DARK_GREY = "#7a7a7a";
@@ -104,7 +113,9 @@ Board.prototype.movePen = function(x, y) {
     var normY = self.normalize(y);
     var refX = self.normalizedPenX[self.normalizedPenX.length - 1];
     var refY = self.normalizedPenY[self.normalizedPenY.length - 1];
-    if (self.hasBuffer && distanceToLine(refX, refY, self.bufferX, self.bufferY, normX, normY) > SAMPLE_DISTANCE_THRESHOLD) {
+    if (self.hasBuffer &&
+            (distanceToLine(refX, refY, normX, normY, self.bufferX, self.bufferY) > SAMPLE_DISTANCE_THRESHOLD ||
+             angle(refX, refY, self.bufferX, self.bufferY, normX, normY) <= SAMPLE_HOOK_THRESHOLD)){
       self.addPoint(self.bufferX, self.bufferY, true, false);
     }
     self.hasBuffer = true;
@@ -196,6 +207,15 @@ Board.prototype.redraw = function() {
 
 Board.prototype.normalize = function(value) {
   return value / this.master.scaleFactor;
+};
+
+Board.prototype.round = function(){
+    var self = this;
+    for(var i = 0; i < self.normalizedPenX.length; i++){
+        self.normalizedPenX[i] = Math.round(self.normalizedPenX[i] / NORMALIZED_WIDTH * ROUNDING_FACTOR_X) / ROUNDING_FACTOR_X * NORMALIZED_WIDTH;
+        self.normalizedPenY[i] = Math.round(self.normalizedPenY[i] / NORMALIZED_HEIGHT * ROUNDING_FACTOR_Y) / ROUNDING_FACTOR_Y * NORMALIZED_HEIGHT;
+    }
+    self.redraw();
 };
 
 //SCALABLE CANVAS
