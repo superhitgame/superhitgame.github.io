@@ -11,7 +11,11 @@ window.onload = function(){
     });
 
     document.getElementById("clearButton").addEventListener("click", function() {
-    board.reset();
+        board.reset();
+    });
+
+    document.getElementById("infoButton").addEventListener("click", function() {
+        alert("Total points: " + board.normalizedPenX.length);
     });
 };
 
