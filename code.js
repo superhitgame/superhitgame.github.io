@@ -21,6 +21,8 @@ var NORMALIZED_PEN_WIDTH = 0.05;
 var SAMPLE_DISTANCE_THRESHOLD = 0.02;
 var HOOK_THRESHOLD = 120 * Math.PI / 180;
 
+var BLACK = "#000000";
+var DARK_GREY = "#7a7a7a";
 var RED = "#c40000";
 var GREY = "#b2b2b2";
 var BLUE = "#2d96ff";
@@ -203,7 +205,7 @@ function ScalableCanvas(canvas) {
 
 ScalableCanvas.prototype.initDrawingStyle = function() {
   var self = this;
-  self.context.strokeStyle = GREY;
+  self.context.strokeStyle = DARK_GREY;
   self.context.lineJoin = "round";
   self.context.lineCap = "round";
   self.context.lineWidth = self.scaleFactor * NORMALIZED_PEN_WIDTH;
@@ -271,10 +273,10 @@ ScalableCanvas.prototype.drawSmoothLine = function(x0, y0, x1, y1, x2, y2) {
   self.context.beginPath();
   self.context.moveTo(x0 * self.scaleFactor, y0 * self.scaleFactor);
   if (angle(x0, y0, x1, y1, x2, y2) >= HOOK_THRESHOLD) {
-    self.context.strokeStyle = GREY;
+    //self.context.strokeStyle = GREY;
     self.context.quadraticCurveTo(x1 * self.scaleFactor, y1 * self.scaleFactor, x2 * self.scaleFactor, y2 * self.scaleFactor);
   } else {
-    self.context.strokeStyle = RED;
+    //self.context.strokeStyle = RED;
     self.context.lineTo(x1 * self.scaleFactor, y1 * self.scaleFactor);
     self.context.lineTo(x2 * self.scaleFactor, y2 * self.scaleFactor);
   }
