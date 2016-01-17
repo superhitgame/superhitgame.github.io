@@ -8,7 +8,7 @@ exports.START_DISTANCE_THRESHOLD = 0.005;
 //sample when we divert this distance from current straight line
 //0 = sample each point
 //>0.2 = never sample
-exports.SAMPLE_DISTANCE_THRESHOLD = 0.005;
+exports.SAMPLE_DISTANCE_THRESHOLD = 0.004;
 
 //sample when we make an angle smaller this threshold
 //0 = never sample
