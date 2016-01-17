@@ -1,6 +1,6 @@
 // PARAMS
 
-exports.DEBUG_DRAW = false;
+exports.DEBUG_DRAW = true;
 
 
 exports.START_DISTANCE_THRESHOLD = 0.005;
@@ -19,7 +19,7 @@ exports.SAMPLE_HOOK_THRESHOLD = 100 * Math.PI / 180; //first number is the angle
 //0 = always smooth
 //180 = always straight
 //var HOOK_THRESHOLD = 130 * Math.PI / 180; //first number is the angle in degrees
-exports.HOOK_THRESHOLD = 120 * Math.PI / 180; //first number is the angle in degrees
+exports.HOOK_THRESHOLD = 180 * Math.PI / 180; //first number is the angle in degrees
 
 // ////////////////////////////
 

@@ -45,16 +45,56 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Board = __webpack_require__(1);
-	var InputArea = __webpack_require__(7);
-	var helper = __webpack_require__(6);
+	var InputArea = __webpack_require__(6);
+	var helper = __webpack_require__(5);
+	//var config = require("./configuration.js");
+
+
+	var config = {
+	    DEBUG_DRAW: false,
+	    START_DISTANCE_THRESHOLD: 0.005, 
+	    //sample when we divert this distance from current straight line
+	    //0 = sample each point
+	    //>0.2 = never sample
+	    SAMPLE_DISTANCE_THRESHOLD: 0.003,
+	    //sample when we make an angle smaller this threshold
+	    //0 = never sample
+	    //180 = sample each point
+	    SAMPLE_HOOK_DEGREES: 160,
+	    SAMPLE_HOOK_THRESHOLD: 160 * Math.PI / 180, //first number is the angle in degrees
+
+	    SAMPLE_HOOK_DEAD_ZONE_START_DEGREES: 0,
+	    SAMPLE_HOOK_DEAD_ZONE_START_THRESHOLD: 0 * Math.PI / 180, //first number is the angle in degrees
+
+	    //draw straight lines, instead of smooth when angle between smaple points is smaller than this threshold
+	    //0 = always smooth
+	    //180 = always straight
+	    //var HOOK_THRESHOLD = 130 * Math.PI / 180; //first number is the angle in degrees
+	    HOOK_DEGREES: 180,
+	    HOOK_THRESHOLD: 180 * Math.PI / 180, //first number is the angle in degrees
+	   
+	    // ////////////////////////////
+	  
+	    NORMALIZED_PEN_WIDTH: 0.03,
+	 
+	    // ////////////////////////////
+
+	    NORMALIZED_WIDTH: 1,
+	    NORMALIZED_HEIGHT: 1.5,
+
+	    ROUNDING_FACTOR_X: 1000,
+	    ROUNDING_FACTOR_Y: 1000
+	};
+
+
 
 	window.onload = function(){
 	    var visibleCanvas = document.getElementById('drawingCanvas');
-	    var board = new Board(visibleCanvas);
+	    var board = new Board(visibleCanvas, config);
 	    var inputArea = new InputArea(visibleCanvas, board);
 	    var v = helper.viewport();
 	    //canvas.width  = v.width - 20;
-	    board.setHeight(v.height - 100);
+	    board.setHeight(v.height - 200);
 
 	    document.getElementById("widthButton").addEventListener("click", function() {
 	        board.setWidth(prompt("Set width:"));
@@ -71,6 +111,34 @@
 	    document.getElementById("infoButton").addEventListener("click", function() {
 	        alert("Total points: " + board.normalizedPenX.length);
 	    });
+
+	    var sampleDistance = document.getElementById("sampleDistance");
+	    var sampleHook = document.getElementById("sampleHook");
+	    var deadZoneStart = document.getElementById("deadZoneStart");
+	    var straightAngle = document.getElementById("straightAngle");
+	    var penWidth = document.getElementById("penWidth");
+	    var debugDraw = document.getElementById("debugDraw");
+
+	    sampleDistance.value = config.SAMPLE_DISTANCE_THRESHOLD;
+	    sampleHook.value = config.SAMPLE_HOOK_DEGREES; 
+	    deadZoneStart.value = config.SAMPLE_HOOK_DEAD_ZONE_START_DEGREES; 
+	    straightAngle.value = config.HOOK_DEGREES;
+	    penWidth.value = config.NORMALIZED_PEN_WIDTH;
+	    debugDraw.checked = config.DEBUG_DRAW;
+
+	    document.getElementById("update").addEventListener("click", function() {
+	        config.SAMPLE_DISTANCE_THRESHOLD = sampleDistance.value;
+	        config.SAMPLE_HOOK_DEGREES = sampleHook.value; 
+	        config.SAMPLE_HOOK_THRESHOLD = sampleHook.value * Math.PI / 180;
+	        config.SAMPLE_HOOK_DEAD_ZONE_START_DEGREES = deadZoneStart.value; 
+	        config.SAMPLE_HOOK_DEAD_ZONE_START_THRESHOLD = deadZoneStart.value * Math.PI / 180;
+	        config.HOOK_DEGREES = straightAngle.value;
+	        config.HOOK_THRESHOLD = straightAngle.value * Math.PI / 180;
+	        config.NORMALIZED_PEN_WIDTH = penWidth.value;
+	        config.DEBUG_DRAW = debugDraw.checked;
+	        board.redraw();
+	    });
+
 	};
 
 
@@ -81,15 +149,15 @@
 	module.exports = Board;
 
 	var ScalableCanvas = __webpack_require__(2);
-	var helper = __webpack_require__(6);
+	var helper = __webpack_require__(5);
 	var logger = __webpack_require__(3);
-	var config = __webpack_require__(4);
-	var colors = __webpack_require__(5);
+	var colors = __webpack_require__(4);
 
-	function Board(visibleCanvas) {
+	function Board(visibleCanvas, config) {
 	  var self = this;
-	  self.buffer = new ScalableCanvas(visibleCanvas);
-	  self.master = new ScalableCanvas(document.createElement("canvas"));
+	  self.config = config;
+	  self.buffer = new ScalableCanvas(visibleCanvas, config);
+	  self.master = new ScalableCanvas(document.createElement("canvas"), config);
 	  self.reset();
 	}
 
@@ -124,16 +192,17 @@
 	    var lastX = self.normalizedPenX[self.normalizedPenX.length - 1];
 	    var lastY = self.normalizedPenY[self.normalizedPenY.length - 1];
 	    if(!self.hasReference){
-	        if((normX != lastX && normY != lastY) || helper.distance(normX, normY, lastX, lastY) > config.START_DISTANCE_THRESHOLD){
+	        if((normX != lastX && normY != lastY) || helper.distance(normX, normY, lastX, lastY) > self.config.START_DISTANCE_THRESHOLD){
 	            //logger.log((lastX - normX) + " - " + (lastY - normY));
 	    		self.hasReference = true;
 	      	    self.refX = normX;
 	    		self.refY = normY;
 	        }
-	    } else if(helper.angle(lastX, lastY, self.bufferX, self.bufferY, normX, normY) <= config.SAMPLE_HOOK_THRESHOLD){
+	    } else if(self.shouldSampleBasedOnAngle(lastX, lastY, self.bufferX, self.bufferY, normX, normY)){
+	        logger.log("angle sample");
 	        self.addPoint(self.bufferX, self.bufferY, true);
 	        self.hasReference = false;
-	    } else if(helper.distanceToLine(normX, normY, lastX, lastY, self.refX, self.refY) > config.SAMPLE_DISTANCE_THRESHOLD){  
+	    } else if(helper.distanceToLine(normX, normY, lastX, lastY, self.refX, self.refY) > self.config.SAMPLE_DISTANCE_THRESHOLD){  
 	      	self.addPoint(normX, normY, true);
 	        self.hasReference = false;
 	    } 
@@ -142,6 +211,14 @@
 	    self.hasBuffer = true;
 	    self.drawBuffer();
 	  }
+	};
+
+	Board.prototype.shouldSampleBasedOnAngle = function(lastX, lastY, bufferX, bufferY, normX, normY){
+	    var self = this;
+	    var angle = helper.angle(lastX, lastY, bufferX, bufferY, normX, normY);
+	    //return angle <= self.config.SAMPLE_HOOK_THRESHOLD;
+	    return angle <= self.config.SAMPLE_HOOK_THRESHOLD && angle > self.config.SAMPLE_HOOK_DEAD_ZONE_START_THRESHOLD;
+
 	};
 
 	Board.prototype.stopPen = function(x, y) {
@@ -221,7 +298,7 @@
 	    }
 	  }
 
-	  if(config.DEBUG_DRAW){
+	  if(self.config.DEBUG_DRAW){
 	    self.buffer.context.strokeStyle = colors.RED;
 	    self.buffer.drawPoints(self.normalizedPenX, self.normalizedPenY);
 
@@ -239,6 +316,8 @@
 
 	Board.prototype.redraw = function() {
 	  var self = this;
+	  self.master.initDrawingStyle();
+	  self.buffer.initDrawingStyle();
 	  self.master.clear();
 	  for (var i = 0; i < self.normalizedPenX.length; i++) {
 	    self.drawMaster(i, true);
@@ -253,8 +332,8 @@
 	Board.prototype.round = function(){
 	    var self = this;
 	    for(var i = 0; i < self.normalizedPenX.length; i++){
-	        self.normalizedPenX[i] = Math.round(self.normalizedPenX[i] / config.NORMALIZED_WIDTH * config.ROUNDING_FACTOR_X) / config.ROUNDING_FACTOR_X * config.NORMALIZED_WIDTH;
-	        self.normalizedPenY[i] = Math.round(self.normalizedPenY[i] / config.NORMALIZED_HEIGHT * config.ROUNDING_FACTOR_Y) / config.ROUNDING_FACTOR_Y * config.NORMALIZED_HEIGHT;
+	        self.normalizedPenX[i] = Math.round(self.normalizedPenX[i] / self.config.NORMALIZED_WIDTH * self.config.ROUNDING_FACTOR_X) / self.config.ROUNDING_FACTOR_X * self.config.NORMALIZED_WIDTH;
+	        self.normalizedPenY[i] = Math.round(self.normalizedPenY[i] / self.config.NORMALIZED_HEIGHT * self.config.ROUNDING_FACTOR_Y) / self.config.ROUNDING_FACTOR_Y * self.config.NORMALIZED_HEIGHT;
 	    }
 	    self.redraw();
 	};
@@ -267,12 +346,12 @@
 	module.exports = ScalableCanvas;
 
 	var logger = __webpack_require__(3);
-	var config = __webpack_require__(4);
-	var colors = __webpack_require__(5);
-	var helper = __webpack_require__(6);
+	var colors = __webpack_require__(4);
+	var helper = __webpack_require__(5);
 
-	function ScalableCanvas(canvas) {
+	function ScalableCanvas(canvas, config) {
 	  var self = this;
+	  self.config = config;
 	  self.canvas = canvas;
 	  self.context = self.canvas.getContext("2d");
 	  self.scaleFactor = 1;
@@ -283,23 +362,21 @@
 	  self.context.strokeStyle = colors.DARK_GREY;
 	  self.context.lineJoin = "round";
 	  self.context.lineCap = "round";
-	  self.context.lineWidth = self.scaleFactor * config.NORMALIZED_PEN_WIDTH;
+	  self.context.lineWidth = self.scaleFactor * self.config.NORMALIZED_PEN_WIDTH;
 	}
 
 	ScalableCanvas.prototype.setWidth = function(width) {
 	  var self = this;
 	  self.canvas.width = width;
-	  self.scaleFactor = width / config.NORMALIZED_WIDTH;
-	  self.canvas.height = self.scaleFactor * config.NORMALIZED_HEIGHT;
-	  self.initDrawingStyle();
+	  self.scaleFactor = width / self.config.NORMALIZED_WIDTH;
+	  self.canvas.height = self.scaleFactor * self.config.NORMALIZED_HEIGHT;
 	};
 
 	ScalableCanvas.prototype.setHeight = function(height) {
 	  var self = this;
 	  self.canvas.height = height;
-	  self.scaleFactor = height / config.NORMALIZED_HEIGHT;
-	  self.canvas.width = self.scaleFactor * config.NORMALIZED_WIDTH;
-	  self.initDrawingStyle();
+	  self.scaleFactor = height / self.config.NORMALIZED_HEIGHT;
+	  self.canvas.width = self.scaleFactor * self.config.NORMALIZED_WIDTH;
 	};
 
 	ScalableCanvas.prototype.drawPoint = function(x, y) {
@@ -347,7 +424,7 @@
 	  var self = this;
 	  self.context.beginPath();
 	  self.context.moveTo(x0 * self.scaleFactor, y0 * self.scaleFactor);
-	  if (helper.angle(x0, y0, x1, y1, x2, y2) >= config.HOOK_THRESHOLD) {
+	  if (helper.angle(x0, y0, x1, y1, x2, y2) >= self.config.HOOK_THRESHOLD) {
 	    //self.context.strokeStyle = GREY;
 	    self.context.quadraticCurveTo(x1 * self.scaleFactor, y1 * self.scaleFactor, x2 * self.scaleFactor, y2 * self.scaleFactor);
 	  } else {
@@ -406,47 +483,6 @@
 /* 4 */
 /***/ function(module, exports) {
 
-	// PARAMS
-
-	exports.DEBUG_DRAW = false;
-
-
-	exports.START_DISTANCE_THRESHOLD = 0.005;
-
-	//sample when we divert this distance from current straight line
-	//0 = sample each point
-	//>0.2 = never sample
-	exports.SAMPLE_DISTANCE_THRESHOLD = 0.004;
-
-	//sample when we make an angle smaller this threshold
-	//0 = never sample
-	//180 = sample each point
-	exports.SAMPLE_HOOK_THRESHOLD = 100 * Math.PI / 180; //first number is the angle in degrees
-
-	//draw straight lines, instead of smooth when angle between smaple points is smaller than this threshold
-	//0 = always smooth
-	//180 = always straight
-	//var HOOK_THRESHOLD = 130 * Math.PI / 180; //first number is the angle in degrees
-	exports.HOOK_THRESHOLD = 120 * Math.PI / 180; //first number is the angle in degrees
-
-	// ////////////////////////////
-
-	exports.NORMALIZED_PEN_WIDTH = 0.03;
-
-	// ////////////////////////////
-
-	exports.NORMALIZED_WIDTH = 1;
-	exports.NORMALIZED_HEIGHT = 1.5;
-
-	exports.ROUNDING_FACTOR_X = 1000;
-	exports.ROUNDING_FACTOR_Y = 1000;
-
-
-
-/***/ },
-/* 5 */
-/***/ function(module, exports) {
-
 	exports.BLACK = "#000000";
 	exports.DARK_GREY = "#7a7a7a";
 	exports.RED = "#c40000";
@@ -456,7 +492,7 @@
 
 
 /***/ },
-/* 6 */
+/* 5 */
 /***/ function(module, exports) {
 
 	//distance from point (x0, y0) to line defined by points (x1, y1) and (x2, y2)
@@ -488,7 +524,7 @@
 
 
 /***/ },
-/* 7 */
+/* 6 */
 /***/ function(module, exports) {
 
 	module.exports = InputArea;

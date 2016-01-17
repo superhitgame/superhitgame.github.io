@@ -1,12 +1,12 @@
 module.exports = ScalableCanvas;
 
 var logger = require("./logger.js");
-var config = require("./configuration.js");
 var colors = require("./colors.js");
 var helper = require("./helper.js");
 
-function ScalableCanvas(canvas) {
+function ScalableCanvas(canvas, config) {
   var self = this;
+  self.config = config;
   self.canvas = canvas;
   self.context = self.canvas.getContext("2d");
   self.scaleFactor = 1;
@@ -17,23 +17,21 @@ ScalableCanvas.prototype.initDrawingStyle = function() {
   self.context.strokeStyle = colors.DARK_GREY;
   self.context.lineJoin = "round";
   self.context.lineCap = "round";
-  self.context.lineWidth = self.scaleFactor * config.NORMALIZED_PEN_WIDTH;
+  self.context.lineWidth = self.scaleFactor * self.config.NORMALIZED_PEN_WIDTH;
 }
 
 ScalableCanvas.prototype.setWidth = function(width) {
   var self = this;
   self.canvas.width = width;
-  self.scaleFactor = width / config.NORMALIZED_WIDTH;
-  self.canvas.height = self.scaleFactor * config.NORMALIZED_HEIGHT;
-  self.initDrawingStyle();
+  self.scaleFactor = width / self.config.NORMALIZED_WIDTH;
+  self.canvas.height = self.scaleFactor * self.config.NORMALIZED_HEIGHT;
 };
 
 ScalableCanvas.prototype.setHeight = function(height) {
   var self = this;
   self.canvas.height = height;
-  self.scaleFactor = height / config.NORMALIZED_HEIGHT;
-  self.canvas.width = self.scaleFactor * config.NORMALIZED_WIDTH;
-  self.initDrawingStyle();
+  self.scaleFactor = height / self.config.NORMALIZED_HEIGHT;
+  self.canvas.width = self.scaleFactor * self.config.NORMALIZED_WIDTH;
 };
 
 ScalableCanvas.prototype.drawPoint = function(x, y) {
@@ -81,7 +79,7 @@ ScalableCanvas.prototype.drawSmoothLine = function(x0, y0, x1, y1, x2, y2) {
   var self = this;
   self.context.beginPath();
   self.context.moveTo(x0 * self.scaleFactor, y0 * self.scaleFactor);
-  if (helper.angle(x0, y0, x1, y1, x2, y2) >= config.HOOK_THRESHOLD) {
+  if (helper.angle(x0, y0, x1, y1, x2, y2) >= self.config.HOOK_THRESHOLD) {
     //self.context.strokeStyle = GREY;
     self.context.quadraticCurveTo(x1 * self.scaleFactor, y1 * self.scaleFactor, x2 * self.scaleFactor, y2 * self.scaleFactor);
   } else {

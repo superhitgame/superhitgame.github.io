@@ -3,13 +3,13 @@ module.exports = Board;
 var ScalableCanvas = require("./scalableCanvas.js");
 var helper = require("./helper.js");
 var logger = require("./logger.js");
-var config = require("./configuration.js");
 var colors = require("./colors.js");
 
-function Board(visibleCanvas) {
+function Board(visibleCanvas, config) {
   var self = this;
-  self.buffer = new ScalableCanvas(visibleCanvas);
-  self.master = new ScalableCanvas(document.createElement("canvas"));
+  self.config = config;
+  self.buffer = new ScalableCanvas(visibleCanvas, config);
+  self.master = new ScalableCanvas(document.createElement("canvas"), config);
   self.reset();
 }
 
@@ -44,16 +44,17 @@ Board.prototype.movePen = function(x, y) {
     var lastX = self.normalizedPenX[self.normalizedPenX.length - 1];
     var lastY = self.normalizedPenY[self.normalizedPenY.length - 1];
     if(!self.hasReference){
-        if((normX != lastX && normY != lastY) || helper.distance(normX, normY, lastX, lastY) > config.START_DISTANCE_THRESHOLD){
+        if((normX != lastX && normY != lastY) || helper.distance(normX, normY, lastX, lastY) > self.config.START_DISTANCE_THRESHOLD){
             //logger.log((lastX - normX) + " - " + (lastY - normY));
     		self.hasReference = true;
       	    self.refX = normX;
     		self.refY = normY;
         }
-    } else if(helper.angle(lastX, lastY, self.bufferX, self.bufferY, normX, normY) <= config.SAMPLE_HOOK_THRESHOLD){
+    } else if(self.shouldSampleBasedOnAngle(lastX, lastY, self.bufferX, self.bufferY, normX, normY)){
+        logger.log("angle sample");
         self.addPoint(self.bufferX, self.bufferY, true);
         self.hasReference = false;
-    } else if(helper.distanceToLine(normX, normY, lastX, lastY, self.refX, self.refY) > config.SAMPLE_DISTANCE_THRESHOLD){  
+    } else if(helper.distanceToLine(normX, normY, lastX, lastY, self.refX, self.refY) > self.config.SAMPLE_DISTANCE_THRESHOLD){  
       	self.addPoint(normX, normY, true);
         self.hasReference = false;
     } 
@@ -62,6 +63,14 @@ Board.prototype.movePen = function(x, y) {
     self.hasBuffer = true;
     self.drawBuffer();
   }
+};
+
+Board.prototype.shouldSampleBasedOnAngle = function(lastX, lastY, bufferX, bufferY, normX, normY){
+    var self = this;
+    var angle = helper.angle(lastX, lastY, bufferX, bufferY, normX, normY);
+    //return angle <= self.config.SAMPLE_HOOK_THRESHOLD;
+    return angle <= self.config.SAMPLE_HOOK_THRESHOLD && angle > self.config.SAMPLE_HOOK_DEAD_ZONE_START_THRESHOLD;
+
 };
 
 Board.prototype.stopPen = function(x, y) {
@@ -141,7 +150,7 @@ Board.prototype.drawBuffer = function() {
     }
   }
 
-  if(config.DEBUG_DRAW){
+  if(self.config.DEBUG_DRAW){
     self.buffer.context.strokeStyle = colors.RED;
     self.buffer.drawPoints(self.normalizedPenX, self.normalizedPenY);
 
@@ -159,6 +168,8 @@ Board.prototype.drawBuffer = function() {
 
 Board.prototype.redraw = function() {
   var self = this;
+  self.master.initDrawingStyle();
+  self.buffer.initDrawingStyle();
   self.master.clear();
   for (var i = 0; i < self.normalizedPenX.length; i++) {
     self.drawMaster(i, true);
@@ -173,8 +184,8 @@ Board.prototype.normalize = function(value) {
 Board.prototype.round = function(){
     var self = this;
     for(var i = 0; i < self.normalizedPenX.length; i++){
-        self.normalizedPenX[i] = Math.round(self.normalizedPenX[i] / config.NORMALIZED_WIDTH * config.ROUNDING_FACTOR_X) / config.ROUNDING_FACTOR_X * config.NORMALIZED_WIDTH;
-        self.normalizedPenY[i] = Math.round(self.normalizedPenY[i] / config.NORMALIZED_HEIGHT * config.ROUNDING_FACTOR_Y) / config.ROUNDING_FACTOR_Y * config.NORMALIZED_HEIGHT;
+        self.normalizedPenX[i] = Math.round(self.normalizedPenX[i] / self.config.NORMALIZED_WIDTH * self.config.ROUNDING_FACTOR_X) / self.config.ROUNDING_FACTOR_X * self.config.NORMALIZED_WIDTH;
+        self.normalizedPenY[i] = Math.round(self.normalizedPenY[i] / self.config.NORMALIZED_HEIGHT * self.config.ROUNDING_FACTOR_Y) / self.config.ROUNDING_FACTOR_Y * self.config.NORMALIZED_HEIGHT;
     }
     self.redraw();
 };

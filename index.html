@@ -15,6 +15,20 @@
         <button id="roundButton">round</button>
         <button id="clearButton">Clear</button>
 
+        <br>
+        Sample distance: <input id="sampleDistance" type="text"> </input>Sample when deviation from line larger than this distance (0 = sample each point, >0.2 = never sample)
+        <br>
+        Sample angle: <input id="sampleHook" type="text"> </input>Sample when angle smaller than this angle (0 = never sample, 180 = sample each point)
+        <br>
+        Sample angle dead zone start: <input id="deadZoneStart" type="text"> </input>(don't sample based on angle below deadzone angle)
+        <br>
+        Straight edge angle: <input id="straightAngle" type="text"> </input>(draw straight lines when angle between sample points is smaller than this angle)
+        <br>
+        Pen width: <input id="penWidth" type="text"> </input>
+        <br>
+        Debug draw: <input id="debugDraw" type="checkbox"> </input>
+        <br>
+        <button id="update">Update</button>
         <script type="text/javascript" src="bundle.js" charset="utf-8"></script>
     </body>
 </html>
