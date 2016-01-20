@@ -1,6 +1,7 @@
 // PARAMS
 
 exports.DEBUG_DRAW = true;
+exports.SHOW_MOUSE = true;
 
 
 exports.START_DISTANCE_THRESHOLD = 0.005;

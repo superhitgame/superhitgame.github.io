@@ -6,6 +6,7 @@ var helper = require("./helper.js");
 
 var config = {
     DEBUG_DRAW: false,
+    SHOW_MOUSE: true,
     START_DISTANCE_THRESHOLD: 0.005, 
     //sample when we divert this distance from current straight line
     //0 = sample each point
@@ -48,7 +49,7 @@ window.onload = function(){
     var inputArea = new InputArea(visibleCanvas, board);
     var v = helper.viewport();
     //canvas.width  = v.width - 20;
-    board.setHeight(v.height - 200);
+    board.setHeight(v.height - 240);
 
     document.getElementById("widthButton").addEventListener("click", function() {
         board.setWidth(prompt("Set width:"));
@@ -72,6 +73,8 @@ window.onload = function(){
     var straightAngle = document.getElementById("straightAngle");
     var penWidth = document.getElementById("penWidth");
     var debugDraw = document.getElementById("debugDraw");
+    var showMouse = document.getElementById("showMouse");
+    var totalPoints = document.getElementById("totalPoints");
 
     sampleDistance.value = config.SAMPLE_DISTANCE_THRESHOLD;
     sampleHook.value = config.SAMPLE_HOOK_DEGREES; 
@@ -79,8 +82,21 @@ window.onload = function(){
     straightAngle.value = config.HOOK_DEGREES;
     penWidth.value = config.NORMALIZED_PEN_WIDTH;
     debugDraw.checked = config.DEBUG_DRAW;
+    showMouse.checked = config.SHOW_MOUSE;
 
     document.getElementById("update").addEventListener("click", function() {
+        update();
+    });
+
+    document.onkeydown=function(e){
+        if(e.which == 13){
+            e.preventDefault();
+            update();
+            return false;
+        }
+    }
+
+    var update = function(){
         config.SAMPLE_DISTANCE_THRESHOLD = sampleDistance.value;
         config.SAMPLE_HOOK_DEGREES = sampleHook.value; 
         config.SAMPLE_HOOK_THRESHOLD = sampleHook.value * Math.PI / 180;
@@ -90,7 +106,9 @@ window.onload = function(){
         config.HOOK_THRESHOLD = straightAngle.value * Math.PI / 180;
         config.NORMALIZED_PEN_WIDTH = penWidth.value;
         config.DEBUG_DRAW = debugDraw.checked;
-        board.redraw();
-    });
+        config.SHOW_MOUSE = showMouse.checked;
+        totalPoints.innerHTML = board.normalizedPenX.length;
+        board.reconstruct();
+    };
 
 };

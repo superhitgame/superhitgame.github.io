@@ -25,18 +25,31 @@ Board.prototype.reset = function() {
   self.bufferY;
   self.refX;
   self.refY;
+  self.mouseX = new Array();
+  self.mouseY = new Array();
+  self.normalizedMouseX = new Array();
+  self.normalizedMouseY = new Array();
+  self.mouseType = new Array();
+  document.getElementById("totalPoints").innerHTML = self.normalizedPenX.length;
   self.redraw();
 };
 
-Board.prototype.startPen = function(x, y) {
+Board.prototype.startPen = function(x, y, reconstructing) {
   var self = this;
   self.addPoint(self.normalize(x), self.normalize(y), false);
-  self.drawBuffer();
+  if(!reconstructing){
+    self.drawBuffer();
+    self.mouseX.push(x);
+    self.mouseY.push(y);
+    self.normalizedMouseX.push(self.normalize(x));
+    self.normalizedMouseY.push(self.normalize(y));
+    self.mouseType.push('start');
+  }
   self.isDrawing = true;
 };
 
 
-Board.prototype.movePen = function(x, y) {
+Board.prototype.movePen = function(x, y, reconstructing) {
   var self = this;
   if (self.isDrawing) {
     var normX = self.normalize(x);
@@ -61,7 +74,14 @@ Board.prototype.movePen = function(x, y) {
     self.bufferX = normX;
     self.bufferY = normY;
     self.hasBuffer = true;
-    self.drawBuffer();
+    if(!reconstructing){
+        self.drawBuffer();
+        self.mouseX.push(x);
+        self.mouseY.push(y);
+        self.normalizedMouseX.push(self.normalize(x));
+        self.normalizedMouseY.push(self.normalize(y));
+        self.mouseType.push('move');
+    }
   }
 };
 
@@ -73,7 +93,7 @@ Board.prototype.shouldSampleBasedOnAngle = function(lastX, lastY, bufferX, buffe
 
 };
 
-Board.prototype.stopPen = function(x, y) {
+Board.prototype.stopPen = function(x, y, reconstructing) {
     var self = this;
     if (self.hasBuffer) {
         self.hasReference = false;
@@ -83,7 +103,14 @@ Board.prototype.stopPen = function(x, y) {
     }
     self.isDrawing = false;
     self.drawMaster(self.penDragging.length - 1, true); 
-    self.drawBuffer();
+    if(!reconstructing){
+        self.drawBuffer();
+        self.mouseX.push(x);
+        self.mouseY.push(y);
+        self.normalizedMouseX.push(self.normalize(x));
+        self.normalizedMouseY.push(self.normalize(y));
+        self.mouseType.push('stop');
+    }
 };
 
 Board.prototype.setWidth = function(width) {
@@ -107,6 +134,7 @@ Board.prototype.addPoint = function(x, y, dragging) {
         self.normalizedPenY.push(y);
         self.penDragging.push(dragging);
         self.drawMaster(self.penDragging.length - 1);
+        document.getElementById("totalPoints").innerHTML = self.normalizedPenX.length;
     }
 };
 
@@ -174,6 +202,37 @@ Board.prototype.redraw = function() {
   for (var i = 0; i < self.normalizedPenX.length; i++) {
     self.drawMaster(i, true);
   }
+  self.drawBuffer();
+};
+
+Board.prototype.reconstruct = function() {
+  var self = this;
+    self.normalizedPenX = new Array();
+  self.normalizedPenY = new Array();
+  self.penDragging = new Array();
+
+  self.master.initDrawingStyle();
+  self.buffer.initDrawingStyle();
+  self.master.clear();
+
+  if(self.config.SHOW_MOUSE){
+    self.master.context.strokeStyle = colors.RED;
+    self.master.drawPoints(self.normalizedMouseX, self.normalizedMouseY); 
+    self.master.context.strokeStyle = colors.DARK_GREY;
+  }
+
+  for (var i = 0; i < self.mouseX.length; i++) {
+      if(self.mouseType[i] === 'start'){
+        self.startPen(self.mouseX[i], self.mouseY[i], true);    
+      } else if(self.mouseType[i] === 'move'){
+        self.movePen(self.mouseX[i], self.mouseY[i], true);    
+      } else {
+        self.stopPen(self.mouseX[i], self.mouseY[i], true);    
+      }
+  }
+
+  
+  
   self.drawBuffer();
 };
 

@@ -52,6 +52,7 @@
 
 	var config = {
 	    DEBUG_DRAW: false,
+	    SHOW_MOUSE: true,
 	    START_DISTANCE_THRESHOLD: 0.005, 
 	    //sample when we divert this distance from current straight line
 	    //0 = sample each point
@@ -94,7 +95,7 @@
 	    var inputArea = new InputArea(visibleCanvas, board);
 	    var v = helper.viewport();
 	    //canvas.width  = v.width - 20;
-	    board.setHeight(v.height - 200);
+	    board.setHeight(v.height - 240);
 
 	    document.getElementById("widthButton").addEventListener("click", function() {
 	        board.setWidth(prompt("Set width:"));
@@ -118,6 +119,8 @@
 	    var straightAngle = document.getElementById("straightAngle");
 	    var penWidth = document.getElementById("penWidth");
 	    var debugDraw = document.getElementById("debugDraw");
+	    var showMouse = document.getElementById("showMouse");
+	    var totalPoints = document.getElementById("totalPoints");
 
 	    sampleDistance.value = config.SAMPLE_DISTANCE_THRESHOLD;
 	    sampleHook.value = config.SAMPLE_HOOK_DEGREES; 
@@ -125,8 +128,21 @@
 	    straightAngle.value = config.HOOK_DEGREES;
 	    penWidth.value = config.NORMALIZED_PEN_WIDTH;
 	    debugDraw.checked = config.DEBUG_DRAW;
+	    showMouse.checked = config.SHOW_MOUSE;
 
 	    document.getElementById("update").addEventListener("click", function() {
+	        update();
+	    });
+
+	    document.onkeydown=function(e){
+	        if(e.which == 13){
+	            e.preventDefault();
+	            update();
+	            return false;
+	        }
+	    }
+
+	    var update = function(){
 	        config.SAMPLE_DISTANCE_THRESHOLD = sampleDistance.value;
 	        config.SAMPLE_HOOK_DEGREES = sampleHook.value; 
 	        config.SAMPLE_HOOK_THRESHOLD = sampleHook.value * Math.PI / 180;
@@ -136,8 +152,10 @@
 	        config.HOOK_THRESHOLD = straightAngle.value * Math.PI / 180;
 	        config.NORMALIZED_PEN_WIDTH = penWidth.value;
 	        config.DEBUG_DRAW = debugDraw.checked;
-	        board.redraw();
-	    });
+	        config.SHOW_MOUSE = showMouse.checked;
+	        totalPoints.innerHTML = board.normalizedPenX.length;
+	        board.reconstruct();
+	    };
 
 	};
 
@@ -173,18 +191,31 @@
 	  self.bufferY;
 	  self.refX;
 	  self.refY;
+	  self.mouseX = new Array();
+	  self.mouseY = new Array();
+	  self.normalizedMouseX = new Array();
+	  self.normalizedMouseY = new Array();
+	  self.mouseType = new Array();
+	  document.getElementById("totalPoints").innerHTML = self.normalizedPenX.length;
 	  self.redraw();
 	};
 
-	Board.prototype.startPen = function(x, y) {
+	Board.prototype.startPen = function(x, y, reconstructing) {
 	  var self = this;
 	  self.addPoint(self.normalize(x), self.normalize(y), false);
-	  self.drawBuffer();
+	  if(!reconstructing){
+	    self.drawBuffer();
+	    self.mouseX.push(x);
+	    self.mouseY.push(y);
+	    self.normalizedMouseX.push(self.normalize(x));
+	    self.normalizedMouseY.push(self.normalize(y));
+	    self.mouseType.push('start');
+	  }
 	  self.isDrawing = true;
 	};
 
 
-	Board.prototype.movePen = function(x, y) {
+	Board.prototype.movePen = function(x, y, reconstructing) {
 	  var self = this;
 	  if (self.isDrawing) {
 	    var normX = self.normalize(x);
@@ -209,7 +240,14 @@
 	    self.bufferX = normX;
 	    self.bufferY = normY;
 	    self.hasBuffer = true;
-	    self.drawBuffer();
+	    if(!reconstructing){
+	        self.drawBuffer();
+	        self.mouseX.push(x);
+	        self.mouseY.push(y);
+	        self.normalizedMouseX.push(self.normalize(x));
+	        self.normalizedMouseY.push(self.normalize(y));
+	        self.mouseType.push('move');
+	    }
 	  }
 	};
 
@@ -221,7 +259,7 @@
 
 	};
 
-	Board.prototype.stopPen = function(x, y) {
+	Board.prototype.stopPen = function(x, y, reconstructing) {
 	    var self = this;
 	    if (self.hasBuffer) {
 	        self.hasReference = false;
@@ -231,7 +269,14 @@
 	    }
 	    self.isDrawing = false;
 	    self.drawMaster(self.penDragging.length - 1, true); 
-	    self.drawBuffer();
+	    if(!reconstructing){
+	        self.drawBuffer();
+	        self.mouseX.push(x);
+	        self.mouseY.push(y);
+	        self.normalizedMouseX.push(self.normalize(x));
+	        self.normalizedMouseY.push(self.normalize(y));
+	        self.mouseType.push('stop');
+	    }
 	};
 
 	Board.prototype.setWidth = function(width) {
@@ -255,6 +300,7 @@
 	        self.normalizedPenY.push(y);
 	        self.penDragging.push(dragging);
 	        self.drawMaster(self.penDragging.length - 1);
+	        document.getElementById("totalPoints").innerHTML = self.normalizedPenX.length;
 	    }
 	};
 
@@ -322,6 +368,37 @@
 	  for (var i = 0; i < self.normalizedPenX.length; i++) {
 	    self.drawMaster(i, true);
 	  }
+	  self.drawBuffer();
+	};
+
+	Board.prototype.reconstruct = function() {
+	  var self = this;
+	    self.normalizedPenX = new Array();
+	  self.normalizedPenY = new Array();
+	  self.penDragging = new Array();
+
+	  self.master.initDrawingStyle();
+	  self.buffer.initDrawingStyle();
+	  self.master.clear();
+
+	  if(self.config.SHOW_MOUSE){
+	    self.master.context.strokeStyle = colors.RED;
+	    self.master.drawPoints(self.normalizedMouseX, self.normalizedMouseY); 
+	    self.master.context.strokeStyle = colors.DARK_GREY;
+	  }
+
+	  for (var i = 0; i < self.mouseX.length; i++) {
+	      if(self.mouseType[i] === 'start'){
+	        self.startPen(self.mouseX[i], self.mouseY[i], true);    
+	      } else if(self.mouseType[i] === 'move'){
+	        self.movePen(self.mouseX[i], self.mouseY[i], true);    
+	      } else {
+	        self.stopPen(self.mouseX[i], self.mouseY[i], true);    
+	      }
+	  }
+
+	  
+	  
 	  self.drawBuffer();
 	};
 
