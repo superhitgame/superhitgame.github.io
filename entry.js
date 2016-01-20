@@ -15,18 +15,15 @@ var config = {
     //sample when we make an angle smaller this threshold
     //0 = never sample
     //180 = sample each point
-    SAMPLE_HOOK_DEGREES: 160,
-    SAMPLE_HOOK_THRESHOLD: 160 * Math.PI / 180, //first number is the angle in degrees
-
-    SAMPLE_HOOK_DEAD_ZONE_START_DEGREES: 0,
-    SAMPLE_HOOK_DEAD_ZONE_START_THRESHOLD: 0 * Math.PI / 180, //first number is the angle in degrees
+    SAMPLE_HOOK_DEGREES: 175,
+    SAMPLE_HOOK_THRESHOLD: 175 * Math.PI / 180, //first number is the angle in degrees
 
     //draw straight lines, instead of smooth when angle between smaple points is smaller than this threshold
     //0 = always smooth
     //180 = always straight
     //var HOOK_THRESHOLD = 130 * Math.PI / 180; //first number is the angle in degrees
-    HOOK_DEGREES: 180,
-    HOOK_THRESHOLD: 180 * Math.PI / 180, //first number is the angle in degrees
+    HOOK_DEGREES: 130,
+    HOOK_THRESHOLD: 130 * Math.PI / 180, //first number is the angle in degrees
    
     // ////////////////////////////
   
@@ -49,7 +46,7 @@ window.onload = function(){
     var inputArea = new InputArea(visibleCanvas, board);
     var v = helper.viewport();
     //canvas.width  = v.width - 20;
-    board.setHeight(v.height - 240);
+    board.setHeight(v.height - 200);
 
     document.getElementById("widthButton").addEventListener("click", function() {
         board.setWidth(prompt("Set width:"));
@@ -67,18 +64,18 @@ window.onload = function(){
         alert("Total points: " + board.normalizedPenX.length);
     });
 
+    var referenceDistance = document.getElementById("referenceDistance");
     var sampleDistance = document.getElementById("sampleDistance");
     var sampleHook = document.getElementById("sampleHook");
-    var deadZoneStart = document.getElementById("deadZoneStart");
     var straightAngle = document.getElementById("straightAngle");
     var penWidth = document.getElementById("penWidth");
     var debugDraw = document.getElementById("debugDraw");
     var showMouse = document.getElementById("showMouse");
     var totalPoints = document.getElementById("totalPoints");
 
+    referenceDistance.value = config.START_DISTANCE_THRESHOLD;
     sampleDistance.value = config.SAMPLE_DISTANCE_THRESHOLD;
     sampleHook.value = config.SAMPLE_HOOK_DEGREES; 
-    deadZoneStart.value = config.SAMPLE_HOOK_DEAD_ZONE_START_DEGREES; 
     straightAngle.value = config.HOOK_DEGREES;
     penWidth.value = config.NORMALIZED_PEN_WIDTH;
     debugDraw.checked = config.DEBUG_DRAW;
@@ -97,11 +94,10 @@ window.onload = function(){
     }
 
     var update = function(){
+        config.START_DISTANCE_THRESHOLD = referenceDistance.value;
         config.SAMPLE_DISTANCE_THRESHOLD = sampleDistance.value;
         config.SAMPLE_HOOK_DEGREES = sampleHook.value; 
         config.SAMPLE_HOOK_THRESHOLD = sampleHook.value * Math.PI / 180;
-        config.SAMPLE_HOOK_DEAD_ZONE_START_DEGREES = deadZoneStart.value; 
-        config.SAMPLE_HOOK_DEAD_ZONE_START_THRESHOLD = deadZoneStart.value * Math.PI / 180;
         config.HOOK_DEGREES = straightAngle.value;
         config.HOOK_THRESHOLD = straightAngle.value * Math.PI / 180;
         config.NORMALIZED_PEN_WIDTH = penWidth.value;

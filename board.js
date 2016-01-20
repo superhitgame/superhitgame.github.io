@@ -89,7 +89,7 @@ Board.prototype.shouldSampleBasedOnAngle = function(lastX, lastY, bufferX, buffe
     var self = this;
     var angle = helper.angle(lastX, lastY, bufferX, bufferY, normX, normY);
     //return angle <= self.config.SAMPLE_HOOK_THRESHOLD;
-    return angle <= self.config.SAMPLE_HOOK_THRESHOLD && angle > self.config.SAMPLE_HOOK_DEAD_ZONE_START_THRESHOLD;
+    return angle <= self.config.SAMPLE_HOOK_THRESHOLD;
 
 };
 
