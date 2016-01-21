@@ -54,7 +54,6 @@
 	    DRAW_ALL: true,
 	    DEBUG_DRAW: false,
 	    SHOW_MOUSE: true,
-	    START_DISTANCE_THRESHOLD: 0.005, 
 	    //sample when we divert this distance from current straight line
 	    //0 = sample each point
 	    //>0.2 = never sample
@@ -62,7 +61,7 @@
 	    //sample when we make an angle smaller this threshold
 	    //0 = never sample
 	    //180 = sample each point
-	    SAMPLE_HOOK_DEGREES: 175,
+	    SAMPLE_HOOK_DEGREES: 140,
 	    SAMPLE_HOOK_THRESHOLD: 175 * Math.PI / 180, //first number is the angle in degrees
 
 	    //draw straight lines, instead of smooth when angle between smaple points is smaller than this threshold
@@ -111,7 +110,6 @@
 	        alert("Total points: " + board.normalizedPenX.length);
 	    });
 
-	    var referenceDistance = document.getElementById("referenceDistance");
 	    var sampleDistance = document.getElementById("sampleDistance");
 	    var sampleHook = document.getElementById("sampleHook");
 	    var straightAngle = document.getElementById("straightAngle");
@@ -121,7 +119,6 @@
 	    var totalPoints = document.getElementById("totalPoints");
 	    var drawAll = document.getElementById("drawAll");
 
-	    referenceDistance.value = config.START_DISTANCE_THRESHOLD;
 	    sampleDistance.value = config.SAMPLE_DISTANCE_THRESHOLD;
 	    sampleHook.value = config.SAMPLE_HOOK_DEGREES; 
 	    straightAngle.value = config.HOOK_DEGREES;
@@ -143,7 +140,6 @@
 	    }
 
 	    var update = function(){
-	        config.START_DISTANCE_THRESHOLD = referenceDistance.value;
 	        config.SAMPLE_DISTANCE_THRESHOLD = sampleDistance.value;
 	        config.SAMPLE_HOOK_DEGREES = sampleHook.value; 
 	        config.SAMPLE_HOOK_THRESHOLD = sampleHook.value * Math.PI / 180;
