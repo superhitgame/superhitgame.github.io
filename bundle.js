@@ -153,6 +153,7 @@
 
 	    var update = function(){
 	        config.SAMPLE_DISTANCE_THRESHOLD = sampleDistance.value;
+	        board.distanceThreshold = sampleDistance.value * board.master.scaleFactor;
 	        config.SAMPLE_HOOK_DEGREES = sampleHook.value; 
 	        config.SAMPLE_HOOK_THRESHOLD = sampleHook.value * Math.PI / 180;
 	        config.HOOK_DEGREES = straightAngle.value;
@@ -238,7 +239,7 @@
 	            logger.log("angle sample");
 	            self.addPoint(self.bufferX, self.bufferY, true);
 	            self.hasReference = false;
-	        } else if(helper.distanceToLine(x, y, lastX, lastY, self.refX, self.refY) > self.config.SAMPLE_DISTANCE_THRESHOLD){  
+	        } else if(helper.distanceToLine(x, y, lastX, lastY, self.refX, self.refY) > self.distanceThreshold){  
 	      	    self.addPoint(x, y, true);
 	            self.hasReference = false;
 	        } 
@@ -287,6 +288,7 @@
 	  self.buffer.setWidth(width);
 	  self.master.setWidth(width);
 	  var newScaleFactor = self.master.scaleFactor;
+	   self.distanceThreshold = self.config.SAMPLE_DISTANCE_THRESHOLD * newScaleFactor;
 	  self.rescale(originalScaleFactor, newScaleFactor);
 	  self.redraw();
 	};
@@ -297,6 +299,7 @@
 	  self.buffer.setHeight(height);
 	  self.master.setHeight(height);
 	    var newScaleFactor = self.master.scaleFactor;
+	   self.distanceThreshold = self.config.SAMPLE_DISTANCE_THRESHOLD * newScaleFactor;
 	  self.rescale(originalScaleFactor, newScaleFactor);
 	  self.redraw();
 	};

@@ -107,6 +107,7 @@ window.onload = function(){
 
     var update = function(){
         config.SAMPLE_DISTANCE_THRESHOLD = sampleDistance.value;
+        board.distanceThreshold = sampleDistance.value * board.master.scaleFactor;
         config.SAMPLE_HOOK_DEGREES = sampleHook.value; 
         config.SAMPLE_HOOK_THRESHOLD = sampleHook.value * Math.PI / 180;
         config.HOOK_DEGREES = straightAngle.value;

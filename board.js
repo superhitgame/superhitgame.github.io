@@ -64,7 +64,7 @@ Board.prototype.movePen = function(x, y, reconstructing) {
             logger.log("angle sample");
             self.addPoint(self.bufferX, self.bufferY, true);
             self.hasReference = false;
-        } else if(helper.distanceToLine(x, y, lastX, lastY, self.refX, self.refY) > self.config.SAMPLE_DISTANCE_THRESHOLD){  
+        } else if(helper.distanceToLine(x, y, lastX, lastY, self.refX, self.refY) > self.distanceThreshold){  
       	    self.addPoint(x, y, true);
             self.hasReference = false;
         } 
@@ -113,6 +113,7 @@ Board.prototype.setWidth = function(width) {
   self.buffer.setWidth(width);
   self.master.setWidth(width);
   var newScaleFactor = self.master.scaleFactor;
+   self.distanceThreshold = self.config.SAMPLE_DISTANCE_THRESHOLD * newScaleFactor;
   self.rescale(originalScaleFactor, newScaleFactor);
   self.redraw();
 };
@@ -123,6 +124,7 @@ Board.prototype.setHeight = function(height) {
   self.buffer.setHeight(height);
   self.master.setHeight(height);
     var newScaleFactor = self.master.scaleFactor;
+   self.distanceThreshold = self.config.SAMPLE_DISTANCE_THRESHOLD * newScaleFactor;
   self.rescale(originalScaleFactor, newScaleFactor);
   self.redraw();
 };
