@@ -119,6 +119,18 @@
 	    var totalPoints = document.getElementById("totalPoints");
 	    var drawAll = document.getElementById("drawAll");
 
+	    debugDraw.addEventListener("click", function() {
+	        update();
+	    });
+
+	    showMouse.addEventListener("click", function() {
+	        update();
+	    });
+
+	    drawAll.addEventListener("click", function() {
+	        update();
+	    });
+
 	    sampleDistance.value = config.SAMPLE_DISTANCE_THRESHOLD;
 	    sampleHook.value = config.SAMPLE_HOOK_DEGREES; 
 	    straightAngle.value = config.HOOK_DEGREES;
