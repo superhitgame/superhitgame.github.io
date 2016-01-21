@@ -417,15 +417,19 @@
 
 
 	Board.prototype.round = function(){
-	    alert("Implementation needs to be updated!");
-	    /*
 	    var self = this;
-	    for(var i = 0; i < self.normalizedPenX.length; i++){
-	        self.normalizedPenX[i] = Math.round(self.normalizedPenX[i] / self.config.NORMALIZED_WIDTH * self.config.ROUNDING_FACTOR_X) / self.config.ROUNDING_FACTOR_X * self.config.NORMALIZED_WIDTH;
-	        self.normalizedPenY[i] = Math.round(self.normalizedPenY[i] / self.config.NORMALIZED_HEIGHT * self.config.ROUNDING_FACTOR_Y) / self.config.ROUNDING_FACTOR_Y * self.config.NORMALIZED_HEIGHT;
+
+	    var normX = 1 / self.config.NORMALIZED_WIDTH / self.config.NORMALIZED_WIDTH * self.config.ROUNDING_FACTOR_X;
+	    var denormX = 1 / self.config.ROUNDING_FACTOR_X * self.config.NORMALIZED_WIDTH * self.config.NORMALIZED_WIDTH;
+
+	    var normY = 1 / self.config.NORMALIZED_HEIGHT/ self.config.NORMALIZED_HEIGHT * self.config.ROUNDING_FACTOR_Y;
+	    var denormY = 1 / self.config.ROUNDING_FACTOR_Y * self.config.NORMALIZED_HEIGHT* self.config.NORMALIZED_HEIGHT;
+
+	    for(var i = 0; i < self.penX.length; i++){
+	        self.penX[i] = Math.round(self.penX[i] * normX) * denormX;
+	        self.penY[i] = Math.round(self.penY[i] * normY) * denormY;
 	    }
 	    self.redraw();
-	    */
 	};
 
 
