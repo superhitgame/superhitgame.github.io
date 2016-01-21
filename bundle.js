@@ -51,6 +51,7 @@
 
 
 	var config = {
+	    DRAW_ALL: true,
 	    DEBUG_DRAW: false,
 	    SHOW_MOUSE: true,
 	    START_DISTANCE_THRESHOLD: 0.005, 
@@ -118,6 +119,7 @@
 	    var debugDraw = document.getElementById("debugDraw");
 	    var showMouse = document.getElementById("showMouse");
 	    var totalPoints = document.getElementById("totalPoints");
+	    var drawAll = document.getElementById("drawAll");
 
 	    referenceDistance.value = config.START_DISTANCE_THRESHOLD;
 	    sampleDistance.value = config.SAMPLE_DISTANCE_THRESHOLD;
@@ -126,6 +128,7 @@
 	    penWidth.value = config.NORMALIZED_PEN_WIDTH;
 	    debugDraw.checked = config.DEBUG_DRAW;
 	    showMouse.checked = config.SHOW_MOUSE;
+	    drawAll.checked = config.DRAW_ALL;
 
 	    document.getElementById("update").addEventListener("click", function() {
 	        update();
@@ -149,6 +152,7 @@
 	        config.NORMALIZED_PEN_WIDTH = penWidth.value;
 	        config.DEBUG_DRAW = debugDraw.checked;
 	        config.SHOW_MOUSE = showMouse.checked;
+	        config.DRAW_ALL= drawAll.checked;
 	        totalPoints.innerHTML = board.normalizedPenX.length;
 	        board.reconstruct();
 	    };
@@ -218,24 +222,29 @@
 	    var normY = self.normalize(y);
 	    var lastX = self.normalizedPenX[self.normalizedPenX.length - 1];
 	    var lastY = self.normalizedPenY[self.normalizedPenY.length - 1];
-	    if(!self.hasReference){
-	        if((normX != lastX && normY != lastY) || helper.distance(normX, normY, lastX, lastY) > self.config.START_DISTANCE_THRESHOLD){
-	            //logger.log((lastX - normX) + " - " + (lastY - normY));
-	    		self.hasReference = true;
-	      	    self.refX = normX;
-	    		self.refY = normY;
-	        }
-	    } else if(self.shouldSampleBasedOnAngle(lastX, lastY, self.bufferX, self.bufferY, normX, normY)){
-	        logger.log("angle sample");
-	        self.addPoint(self.bufferX, self.bufferY, true);
-	        self.hasReference = false;
-	    } else if(helper.distanceToLine(normX, normY, lastX, lastY, self.refX, self.refY) > self.config.SAMPLE_DISTANCE_THRESHOLD){  
-	      	self.addPoint(normX, normY, true);
-	        self.hasReference = false;
-	    } 
-	    self.bufferX = normX;
-	    self.bufferY = normY;
-	    self.hasBuffer = true;
+
+	    if(self.config.DRAW_ALL){
+	        self.addPoint(normX, normY, true);
+	    } else {
+	        if(!self.hasReference){
+	            if((normX != lastX || normY != lastY)){
+	    		    self.hasReference = true;
+	      	        self.refX = normX;
+	    		    self.refY = normY;
+	            }
+	        } else if(self.shouldSampleBasedOnAngle(lastX, lastY, self.bufferX, self.bufferY, normX, normY)){
+	            logger.log("angle sample");
+	            self.addPoint(self.bufferX, self.bufferY, true);
+	            self.hasReference = false;
+	        } else if(helper.distanceToLine(normX, normY, lastX, lastY, self.refX, self.refY) > self.config.SAMPLE_DISTANCE_THRESHOLD){  
+	      	    self.addPoint(normX, normY, true);
+	            self.hasReference = false;
+	        } 
+	        self.bufferX = normX;
+	        self.bufferY = normY;
+	        self.hasBuffer = true;
+	    }
+
 	    if(!reconstructing){
 	        self.drawBuffer();
 	        self.mouseX.push(x);
@@ -250,7 +259,6 @@
 	Board.prototype.shouldSampleBasedOnAngle = function(lastX, lastY, bufferX, bufferY, normX, normY){
 	    var self = this;
 	    var angle = helper.angle(lastX, lastY, bufferX, bufferY, normX, normY);
-	    //return angle <= self.config.SAMPLE_HOOK_THRESHOLD;
 	    return angle <= self.config.SAMPLE_HOOK_THRESHOLD;
 
 	};

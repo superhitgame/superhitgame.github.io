@@ -56,24 +56,29 @@ Board.prototype.movePen = function(x, y, reconstructing) {
     var normY = self.normalize(y);
     var lastX = self.normalizedPenX[self.normalizedPenX.length - 1];
     var lastY = self.normalizedPenY[self.normalizedPenY.length - 1];
-    if(!self.hasReference){
-        if((normX != lastX && normY != lastY) || helper.distance(normX, normY, lastX, lastY) > self.config.START_DISTANCE_THRESHOLD){
-            //logger.log((lastX - normX) + " - " + (lastY - normY));
-    		self.hasReference = true;
-      	    self.refX = normX;
-    		self.refY = normY;
-        }
-    } else if(self.shouldSampleBasedOnAngle(lastX, lastY, self.bufferX, self.bufferY, normX, normY)){
-        logger.log("angle sample");
-        self.addPoint(self.bufferX, self.bufferY, true);
-        self.hasReference = false;
-    } else if(helper.distanceToLine(normX, normY, lastX, lastY, self.refX, self.refY) > self.config.SAMPLE_DISTANCE_THRESHOLD){  
-      	self.addPoint(normX, normY, true);
-        self.hasReference = false;
-    } 
-    self.bufferX = normX;
-    self.bufferY = normY;
-    self.hasBuffer = true;
+
+    if(self.config.DRAW_ALL){
+        self.addPoint(normX, normY, true);
+    } else {
+        if(!self.hasReference){
+            if((normX != lastX || normY != lastY)){
+    		    self.hasReference = true;
+      	        self.refX = normX;
+    		    self.refY = normY;
+            }
+        } else if(self.shouldSampleBasedOnAngle(lastX, lastY, self.bufferX, self.bufferY, normX, normY)){
+            logger.log("angle sample");
+            self.addPoint(self.bufferX, self.bufferY, true);
+            self.hasReference = false;
+        } else if(helper.distanceToLine(normX, normY, lastX, lastY, self.refX, self.refY) > self.config.SAMPLE_DISTANCE_THRESHOLD){  
+      	    self.addPoint(normX, normY, true);
+            self.hasReference = false;
+        } 
+        self.bufferX = normX;
+        self.bufferY = normY;
+        self.hasBuffer = true;
+    }
+
     if(!reconstructing){
         self.drawBuffer();
         self.mouseX.push(x);
@@ -88,7 +93,6 @@ Board.prototype.movePen = function(x, y, reconstructing) {
 Board.prototype.shouldSampleBasedOnAngle = function(lastX, lastY, bufferX, bufferY, normX, normY){
     var self = this;
     var angle = helper.angle(lastX, lastY, bufferX, bufferY, normX, normY);
-    //return angle <= self.config.SAMPLE_HOOK_THRESHOLD;
     return angle <= self.config.SAMPLE_HOOK_THRESHOLD;
 
 };

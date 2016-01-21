@@ -5,6 +5,7 @@ var helper = require("./helper.js");
 
 
 var config = {
+    DRAW_ALL: true,
     DEBUG_DRAW: false,
     SHOW_MOUSE: true,
     START_DISTANCE_THRESHOLD: 0.005, 
@@ -72,6 +73,7 @@ window.onload = function(){
     var debugDraw = document.getElementById("debugDraw");
     var showMouse = document.getElementById("showMouse");
     var totalPoints = document.getElementById("totalPoints");
+    var drawAll = document.getElementById("drawAll");
 
     referenceDistance.value = config.START_DISTANCE_THRESHOLD;
     sampleDistance.value = config.SAMPLE_DISTANCE_THRESHOLD;
@@ -80,6 +82,7 @@ window.onload = function(){
     penWidth.value = config.NORMALIZED_PEN_WIDTH;
     debugDraw.checked = config.DEBUG_DRAW;
     showMouse.checked = config.SHOW_MOUSE;
+    drawAll.checked = config.DRAW_ALL;
 
     document.getElementById("update").addEventListener("click", function() {
         update();
@@ -103,6 +106,7 @@ window.onload = function(){
         config.NORMALIZED_PEN_WIDTH = penWidth.value;
         config.DEBUG_DRAW = debugDraw.checked;
         config.SHOW_MOUSE = showMouse.checked;
+        config.DRAW_ALL= drawAll.checked;
         totalPoints.innerHTML = board.normalizedPenX.length;
         board.reconstruct();
     };
