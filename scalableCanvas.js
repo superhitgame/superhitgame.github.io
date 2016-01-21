@@ -37,8 +37,8 @@ ScalableCanvas.prototype.setHeight = function(height) {
 ScalableCanvas.prototype.drawPoint = function(x, y) {
   var self = this;
   self.context.beginPath();
-  self.context.moveTo(x * self.scaleFactor - 1, y * self.scaleFactor);
-  self.context.lineTo(x * self.scaleFactor, y * self.scaleFactor);
+  self.context.moveTo(x - 1, y);
+  self.context.lineTo(x, y);
   self.context.stroke();
 };
 
@@ -46,8 +46,8 @@ ScalableCanvas.prototype.drawPoints = function(pointsX, pointsY) {
   var self = this;
   self.context.beginPath();
   for (var i = 0; i < pointsX.length; i++) {
-    self.context.moveTo(pointsX[i] * self.scaleFactor - 1, pointsY[i] * self.scaleFactor);
-    self.context.lineTo(pointsX[i] * self.scaleFactor, pointsY[i] * self.scaleFactor);
+    self.context.moveTo(pointsX[i] - 1, pointsY[i]);
+    self.context.lineTo(pointsX[i], pointsY[i]);
   }
   self.context.stroke();
 };
@@ -55,8 +55,8 @@ ScalableCanvas.prototype.drawPoints = function(pointsX, pointsY) {
 ScalableCanvas.prototype.drawLine = function(x0, y0, x1, y1) {
   var self = this;
   self.context.beginPath();
-  self.context.moveTo(x0 * self.scaleFactor - 1, y0 * self.scaleFactor);
-  self.context.lineTo(x1 * self.scaleFactor, y1 * self.scaleFactor);
+  self.context.moveTo(x0 - 1, y0);
+  self.context.lineTo(x1, y1);
   self.context.stroke();
 };
 
@@ -65,11 +65,11 @@ ScalableCanvas.prototype.drawLines = function(pointsX, pointsY, dragging) {
   self.context.beginPath();
   for (var i = 0; i < pointsX.length; i++) {
     if (!dragging[i]) {
-      self.context.moveTo(pointsX[i] * self.scaleFactor - 1, pointsY[i] * self.scaleFactor);
-      self.context.lineTo(pointsX[i] * self.scaleFactor, pointsY[i] * self.scaleFactor);
+      self.context.moveTo(pointsX[i] - 1, pointsY[i]);
+      self.context.lineTo(pointsX[i], pointsY[i]);
     } else {
-      self.context.moveTo(pointsX[i - 1] * self.scaleFactor - 1, pointsY[i - 1] * self.scaleFactor);
-      self.context.lineTo(pointsX[i] * self.scaleFactor, pointsY[i] * self.scaleFactor);
+      self.context.moveTo(pointsX[i - 1] - 1, pointsY[i - 1]);
+      self.context.lineTo(pointsX[i], pointsY[i]);
     }
   }
   self.context.stroke();
@@ -78,14 +78,14 @@ ScalableCanvas.prototype.drawLines = function(pointsX, pointsY, dragging) {
 ScalableCanvas.prototype.drawSmoothLine = function(x0, y0, x1, y1, x2, y2) {
   var self = this;
   self.context.beginPath();
-  self.context.moveTo(x0 * self.scaleFactor, y0 * self.scaleFactor);
+  self.context.moveTo(x0, y0);
   if (helper.angle(x0, y0, x1, y1, x2, y2) >= self.config.HOOK_THRESHOLD) {
     //self.context.strokeStyle = GREY;
-    self.context.quadraticCurveTo(x1 * self.scaleFactor, y1 * self.scaleFactor, x2 * self.scaleFactor, y2 * self.scaleFactor);
+    self.context.quadraticCurveTo(x1, y1, x2, y2);
   } else {
     //self.context.strokeStyle = RED;
-    self.context.lineTo(x1 * self.scaleFactor, y1 * self.scaleFactor);
-    self.context.lineTo(x2 * self.scaleFactor, y2 * self.scaleFactor);
+    self.context.lineTo(x1, y1);
+    self.context.lineTo(x2, y2);
   }
   self.context.stroke();
 }
@@ -95,18 +95,18 @@ ScalableCanvas.prototype.drawSmoothLines = function(pointsX, pointsY, dragging, 
   self.context.beginPath();
   for (var i = 0; i < pointsX.length; i++) {
     if (!dragging[i]) {
-      self.context.moveTo(pointsX[i] * self.scaleFactor - 1, pointsY[i] * self.scaleFactor);
-      self.context.lineTo(pointsX[i] * self.scaleFactor, pointsY[i] * self.scaleFactor);
+      self.context.moveTo(pointsX[i] - 1, pointsY[i]);
+      self.context.lineTo(pointsX[i], pointsY[i]);
     } else if (i < pointsX.length - 1) {
       if (dragging[i + 1]) {
-        var xc = (pointsX[i] * self.scaleFactor + pointsX[i + 1] * self.scaleFactor) / 2;
-        var yc = (pointsY[i] * self.scaleFactor + pointsY[i + 1] * self.scaleFactor) / 2;
-        self.context.quadraticCurveTo(pointsX[i] * self.scaleFactor, pointsY[i] * self.scaleFactor, xc, yc);
+        var xc = (pointsX[i] + pointsX[i + 1]) / 2;
+        var yc = (pointsY[i] + pointsY[i + 1]) / 2;
+        self.context.quadraticCurveTo(pointsX[i], pointsY[i], xc, yc);
       } else {
-        self.context.lineTo(pointsX[i] * self.scaleFactor, pointsY[i] * self.scaleFactor);
+        self.context.lineTo(pointsX[i], pointsY[i]);
       }
     } else if (close) {
-      self.context.lineTo(pointsX[i] * self.scaleFactor, pointsY[i] * self.scaleFactor);
+      self.context.lineTo(pointsX[i], pointsY[i]);
     }
   }
   self.context.stroke();

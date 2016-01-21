@@ -61,7 +61,7 @@ window.onload = function(){
     });
 
     document.getElementById("infoButton").addEventListener("click", function() {
-        alert("Total points: " + board.normalizedPenX.length);
+        alert("Total points: " + board.penX.length);
     });
 
     var sampleDistance = document.getElementById("sampleDistance");
@@ -103,7 +103,7 @@ window.onload = function(){
         config.DEBUG_DRAW = debugDraw.checked;
         config.SHOW_MOUSE = showMouse.checked;
         config.DRAW_ALL= drawAll.checked;
-        totalPoints.innerHTML = board.normalizedPenX.length;
+        totalPoints.innerHTML = board.penX.length;
         board.reconstruct();
     };
 
