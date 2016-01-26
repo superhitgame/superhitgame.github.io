@@ -41,9 +41,10 @@ var config = {
 
 
 window.onload = function(){
-    var visibleCanvas = document.getElementById('drawingCanvas');
-    var board = new Board(visibleCanvas, config);
-    var inputArea = new InputArea(visibleCanvas, board);
+    var drawingCanvas = document.getElementById('drawingCanvas');
+    var tempCanvas = document.getElementById('tempCanvas');
+    var board = new Board(drawingCanvas, tempCanvas, config);
+    var inputArea = new InputArea(tempCanvas, board);
     var v = helper.viewport();
     //canvas.width  = v.width - 20;
     board.setHeight(v.height - 200);
@@ -70,7 +71,7 @@ window.onload = function(){
     var penWidth = document.getElementById("penWidth");
     var debugDraw = document.getElementById("debugDraw");
     var showMouse = document.getElementById("showMouse");
-    var totalPoints = document.getElementById("totalPoints");
+    var mousePoints = document.getElementById("mousePoints");
     var drawAll = document.getElementById("drawAll");
 
     debugDraw.addEventListener("click", function() {
@@ -116,7 +117,7 @@ window.onload = function(){
         config.DEBUG_DRAW = debugDraw.checked;
         config.SHOW_MOUSE = showMouse.checked;
         config.DRAW_ALL= drawAll.checked;
-        totalPoints.innerHTML = board.penX.length;
+        mousePoints.innerHTML = board.penX.length;
         board.reconstruct();
     };
 

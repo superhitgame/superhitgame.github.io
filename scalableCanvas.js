@@ -76,40 +76,41 @@ ScalableCanvas.prototype.drawLines = function(pointsX, pointsY, dragging) {
 }
 
 ScalableCanvas.prototype.drawSmoothLine = function(x0, y0, x1, y1, x2, y2) {
-  var self = this;
-  self.context.beginPath();
-  self.context.moveTo(x0, y0);
-  if (helper.angle(x0, y0, x1, y1, x2, y2) >= self.config.HOOK_THRESHOLD) {
-    //self.context.strokeStyle = GREY;
-    self.context.quadraticCurveTo(x1, y1, x2, y2);
-  } else {
-    //self.context.strokeStyle = RED;
-    self.context.lineTo(x1, y1);
-    self.context.lineTo(x2, y2);
-  }
-  self.context.stroke();
+    this.context.beginPath();
+    this.context.moveTo(x0, y0);
+    if (helper.angle(x0, y0, x1, y1, x2, y2) >= this.config.HOOK_THRESHOLD) {
+        this.context.quadraticCurveTo(x1, y1, x2, y2);
+    } else {
+        this.context.lineTo(x1, y1);
+        this.context.lineTo(x2, y2);
+    }
+    this.context.stroke();
 }
 
-ScalableCanvas.prototype.drawSmoothLines = function(pointsX, pointsY, dragging, close) {
-  var self = this;
-  self.context.beginPath();
-  for (var i = 0; i < pointsX.length; i++) {
-    if (!dragging[i]) {
-      self.context.moveTo(pointsX[i] - 1, pointsY[i]);
-      self.context.lineTo(pointsX[i], pointsY[i]);
-    } else if (i < pointsX.length - 1) {
-      if (dragging[i + 1]) {
-        var xc = (pointsX[i] + pointsX[i + 1]) / 2;
-        var yc = (pointsY[i] + pointsY[i + 1]) / 2;
-        self.context.quadraticCurveTo(pointsX[i], pointsY[i], xc, yc);
-      } else {
-        self.context.lineTo(pointsX[i], pointsY[i]);
-      }
-    } else if (close) {
-      self.context.lineTo(pointsX[i], pointsY[i]);
+ScalableCanvas.prototype.drawSmoothLines = function(pointsX, pointsY, dragging) {
+    this.context.beginPath();
+    for (var i = 0; i < pointsX.length; i++) {
+        if (!dragging[i]) {
+        this.context.moveTo(pointsX[i] - 1, pointsY[i]);
+        this.context.lineTo(pointsX[i], pointsY[i]);
+        } else if (i < pointsX.length - 1) {
+        if (dragging[i + 1]) {
+            var xc = (pointsX[i] + pointsX[i + 1]) / 2;
+            var yc = (pointsY[i] + pointsY[i + 1]) / 2;
+            if (helper.angle(pointsX[i - 1], pointsY[i - 1], pointsX[i], pointsY[i], pointsX[i + 1], pointsY[i + 1]) >= this.config.HOOK_THRESHOLD) {
+                this.context.quadraticCurveTo(pointsX[i], pointsY[i], xc, yc);
+            } else {
+                this.context.lineTo(pointsX[i], pointsY[i]);
+                this.context.lineTo(xc, yc);
+            }
+        } else {
+            this.context.lineTo(pointsX[i], pointsY[i]);
+        }
+        } else if (close) {
+            this.context.lineTo(pointsX[i], pointsY[i]);
+        }
     }
-  }
-  self.context.stroke();
+    this.context.stroke();
 }
 
 
