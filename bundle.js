@@ -355,6 +355,7 @@
 	    this.canvas = canvas;
 	    this.context = this.canvas.getContext("2d");
 	    this.scaleFactor = 1;
+	    this.clearMargin = 1;
 	}
 
 	ScalableCanvas.prototype.initDrawingStyle = function() {
@@ -362,6 +363,7 @@
 	    this.context.lineJoin = "round";
 	    this.context.lineCap = "round";
 	    this.context.lineWidth = this.scaleFactor * this.config.NORMALIZED_PEN_WIDTH;
+	    this.clearMargin = this.context.lineWidth;
 	}
 
 	ScalableCanvas.prototype.setWidth = function(width) {
@@ -456,27 +458,32 @@
 	};
 
 	ScalableCanvas.prototype.clearBuffer = function(bufferFromX, bufferFromY, bufferToX, bufferToY) {
-	    var margin = this.context.lineWidth;
 	    var width, height, x, y;
 	    if(bufferFromX < bufferToX){
-	        width = bufferToX - bufferFromX + 2 * margin;
-	        x = bufferFromX - margin;
+	        width = bufferToX - bufferFromX + 2 * this.clearMargin;
+	        x = bufferFromX - this.clearMargin;
 	    } else {
-	        width = bufferFromX - bufferToX + 2 * margin;
-	        x = bufferToX - margin;
+	        width = bufferFromX - bufferToX + 2 * this.clearMargin;
+	        x = bufferToX - this.clearMargin;
 	    }
 
 	    if(bufferFromY < bufferToY){
-	        height = bufferToY - bufferFromY + 2 * margin;
-	        y = bufferFromY - margin;
+	        height = bufferToY - bufferFromY + 2 * this.clearMargin;
+	        y = bufferFromY - this.clearMargin;
 	    } else {
-	        height = bufferFromY - bufferToY + 2 * margin;
-	        y = bufferToY - margin;
+	        height = bufferFromY - bufferToY + 2 * this.clearMargin;
+	        y = bufferToY - this.clearMargin;
 	    }
 
-	    this.context.clearRect(x, y, width, height);
-	    //this.context.rect(x, y, width, height);
-	    //this.context.stroke();
+	    //this.context.clearRect(x, y, width, height);
+	    var origColor = this.context.strokeStyle
+	    var origWidth = this.context.lineWidth;
+	    this.context.strokeStyle = colors.RED;
+	    var origWidth = 1;
+	    this.context.rect(x, y, width, height);
+	    this.context.stroke();
+	    this.context.strokeStyle = origColor;
+	    this.context.lineWidth = origWidth;
 	};
 
 	ScalableCanvas.prototype.clear = function() {
