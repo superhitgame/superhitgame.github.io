@@ -110,21 +110,22 @@ ScalableCanvas.prototype.drawCanvas = function(scalableCanvas) {
 };
 
 ScalableCanvas.prototype.clearBuffer = function(bufferFromX, bufferFromY, bufferToX, bufferToY) {
+    var margin = this.context.lineWidth;
     var width, height, x, y;
     if(bufferFromX < bufferToX){
-        width = bufferToX - bufferFromX;
-        x = bufferToX;
+        width = bufferToX - bufferFromX + 2 * margin;
+        x = bufferFromX - margin;
     } else {
-        width = bufferFromX - bufferToX;
-        x = bufferFromX;
+        width = bufferFromX - bufferToX + 2 * margin;
+        x = bufferToX - margin;
     }
 
     if(bufferFromY < bufferToY){
-        height = bufferToY - bufferFromY;
-        y = bufferToY;
+        height = bufferToY - bufferFromY + 2 * margin;
+        y = bufferFromY - margin;
     } else {
-        height = bufferFromY - bufferToY;
-        y = bufferFromY;
+        height = bufferFromY - bufferToY + 2 * margin;
+        y = bufferToY - margin;
     }
 
     this.context.clearRect(x, y, width, height);
