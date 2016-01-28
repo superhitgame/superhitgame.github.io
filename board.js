@@ -71,7 +71,10 @@ Board.prototype.addPoint = function(x, y, dragging, close) {
 };
 
 Board.prototype.draw = function(index, close) {
-    this.buffer.clear();
+    if(this.hasBuffer){
+        this.buffer.clearBuffer(this.bufferFromX, this.bufferFromY, this.bufferToX, this.bufferToY);
+        this.hasBuffer = false;
+    }
     if (!this.penDragging[index]) {
         this.master.drawPoint(this.penX[index], this.penY[index]);
     } else if (this.penDragging[index - 1]) {
@@ -84,6 +87,11 @@ Board.prototype.draw = function(index, close) {
             var yc1 = (this.penY[index - 1] + this.penY[index]) / 2;
             this.master.drawSmoothLine(xc0, yc0, this.penX[index - 1], this.penY[index - 1], xc1, yc1);
             this.buffer.drawLine(xc1, yc1, this.penX[index], this.penY[index]);
+            this.hasBuffer = true;
+            this.bufferFromX = xc1;
+            this.bufferFromY = yc1;
+            this.bufferToX = this.penX[index];
+            this.bufferToY = this.penY[index];
         }
     } else if (close) {
         this.master.drawLine(this.penX[index - 1], this.penY[index - 1], this.penX[index], this.penY[index]);
@@ -92,6 +100,11 @@ Board.prototype.draw = function(index, close) {
         var yc = (this.penY[index - 1] + this.penY[index]) / 2;
         this.master.drawLine(this.penX[index - 1], this.penY[index - 1], xc, yc);
         this.buffer.drawLine(xc, yc, this.penX[index], this.penY[index]);
+        this.hasBuffer = true;
+        this.bufferFromX = xc;
+        this.bufferFromY = yc;
+        this.bufferToX = this.penX[index];
+        this.bufferToY = this.penY[index];
     }
 }
 

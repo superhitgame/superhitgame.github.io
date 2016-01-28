@@ -5,74 +5,66 @@ var colors = require("./colors.js");
 var helper = require("./helper.js");
 
 function ScalableCanvas(canvas, config) {
-  var self = this;
-  self.config = config;
-  self.canvas = canvas;
-  self.context = self.canvas.getContext("2d");
-  self.scaleFactor = 1;
+    this.config = config;
+    this.canvas = canvas;
+    this.context = this.canvas.getContext("2d");
+    this.scaleFactor = 1;
 }
 
 ScalableCanvas.prototype.initDrawingStyle = function() {
-  var self = this;
-  self.context.strokeStyle = colors.DARK_GREY;
-  self.context.lineJoin = "round";
-  self.context.lineCap = "round";
-  self.context.lineWidth = self.scaleFactor * self.config.NORMALIZED_PEN_WIDTH;
+    this.context.strokeStyle = colors.DARK_GREY;
+    this.context.lineJoin = "round";
+    this.context.lineCap = "round";
+    this.context.lineWidth = this.scaleFactor * this.config.NORMALIZED_PEN_WIDTH;
 }
 
 ScalableCanvas.prototype.setWidth = function(width) {
-  var self = this;
-  self.canvas.width = width;
-  self.scaleFactor = width / self.config.NORMALIZED_WIDTH;
-  self.canvas.height = self.scaleFactor * self.config.NORMALIZED_HEIGHT;
+    this.canvas.width = width;
+    this.scaleFactor = width / this.config.NORMALIZED_WIDTH;
+    this.canvas.height = this.scaleFactor * this.config.NORMALIZED_HEIGHT;
 };
 
 ScalableCanvas.prototype.setHeight = function(height) {
-  var self = this;
-  self.canvas.height = height;
-  self.scaleFactor = height / self.config.NORMALIZED_HEIGHT;
-  self.canvas.width = self.scaleFactor * self.config.NORMALIZED_WIDTH;
+    this.canvas.height = height;
+    this.scaleFactor = height / this.config.NORMALIZED_HEIGHT;
+    this.canvas.width = this.scaleFactor * this.config.NORMALIZED_WIDTH;
 };
 
 ScalableCanvas.prototype.drawPoint = function(x, y) {
-  var self = this;
-  self.context.beginPath();
-  self.context.moveTo(x - 1, y);
-  self.context.lineTo(x, y);
-  self.context.stroke();
+    this.context.beginPath();
+    this.context.moveTo(x - 1, y);
+    this.context.lineTo(x, y);
+    this.context.stroke();
 };
 
 ScalableCanvas.prototype.drawPoints = function(pointsX, pointsY) {
-  var self = this;
-  self.context.beginPath();
-  for (var i = 0; i < pointsX.length; i++) {
-    self.context.moveTo(pointsX[i] - 1, pointsY[i]);
-    self.context.lineTo(pointsX[i], pointsY[i]);
-  }
-  self.context.stroke();
+    this.context.beginPath();
+    for(var i = 0; i < pointsX.length; i++) {
+        this.context.moveTo(pointsX[i] - 1, pointsY[i]);
+        this.context.lineTo(pointsX[i], pointsY[i]);
+    }
+    this.context.stroke();
 };
 
 ScalableCanvas.prototype.drawLine = function(x0, y0, x1, y1) {
-  var self = this;
-  self.context.beginPath();
-  self.context.moveTo(x0 - 1, y0);
-  self.context.lineTo(x1, y1);
-  self.context.stroke();
+    this.context.beginPath();
+    this.context.moveTo(x0 - 1, y0);
+    this.context.lineTo(x1, y1);
+    this.context.stroke();
 };
 
 ScalableCanvas.prototype.drawLines = function(pointsX, pointsY, dragging) {
-  var self = this;
-  self.context.beginPath();
-  for (var i = 0; i < pointsX.length; i++) {
-    if (!dragging[i]) {
-      self.context.moveTo(pointsX[i] - 1, pointsY[i]);
-      self.context.lineTo(pointsX[i], pointsY[i]);
-    } else {
-      self.context.moveTo(pointsX[i - 1] - 1, pointsY[i - 1]);
-      self.context.lineTo(pointsX[i], pointsY[i]);
+    this.context.beginPath();
+    for (var i = 0; i < pointsX.length; i++) {
+        if (!dragging[i]) {
+            this.context.moveTo(pointsX[i] - 1, pointsY[i]);
+            this.context.lineTo(pointsX[i], pointsY[i]);
+        } else {
+            this.context.moveTo(pointsX[i - 1] - 1, pointsY[i - 1]);
+            this.context.lineTo(pointsX[i], pointsY[i]);
+        }
     }
-  }
-  self.context.stroke();
+    this.context.stroke();
 }
 
 ScalableCanvas.prototype.drawSmoothLine = function(x0, y0, x1, y1, x2, y2) {
@@ -113,14 +105,18 @@ ScalableCanvas.prototype.drawSmoothLines = function(pointsX, pointsY, dragging) 
     this.context.stroke();
 }
 
-
 ScalableCanvas.prototype.drawCanvas = function(scalableCanvas) {
-  var self = this;
-  self.context.drawImage(scalableCanvas.canvas, 0, 0);
+    this.context.drawImage(scalableCanvas.canvas, 0, 0);
+};
+
+ScalableCanvas.prototype.clearBuffer = function(bufferFromX, bufferFromY, bufferToX, bufferToY) {
+    var revX = bufferFromX < bufferToX ? 1 : -1;
+    var revY = bufferFromY < bufferToY ? 1 : -1;
+    this.context.clearRect(bufferFromX - revX * this.context.lineWitdh, bufferFromY - revY * this.context.lineWidth,
+                           bufferToX + revX * this.context.lineWitdh, bufferToY + revY * this.context.lineWidth);
 };
 
 ScalableCanvas.prototype.clear = function() {
-  var self = this;
-  self.context.clearRect(0, 0, self.context.canvas.width, self.context.canvas.height);
+    this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
 };
 
