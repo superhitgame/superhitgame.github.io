@@ -72,6 +72,7 @@ Board.prototype.addPoint = function(x, y, dragging, close) {
 
 Board.prototype.draw = function(index, close) {
     if(this.hasBuffer){
+        //this.buffer.clear();
         this.buffer.clearBuffer(this.bufferFromX, this.bufferFromY, this.bufferToX, this.bufferToY);
         this.hasBuffer = false;
     }
