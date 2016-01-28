@@ -475,7 +475,8 @@
 	        y = bufferToY - margin;
 	    }
 
-	    //this.context.clearRect(x, y, width, height);
+	    this.context.clearRect(x, y, width, height);
+	    /*
 	    var origColor = this.context.strokeStyle
 	    var origWidth = this.context.lineWidth;
 	    this.context.strokeStyle = colors.RED;
@@ -484,6 +485,7 @@
 	    this.context.stroke();
 	    this.context.strokeStyle = origColor;
 	    this.context.lineWidth = origWidth;
+	    */
 	};
 
 	ScalableCanvas.prototype.clear = function() {

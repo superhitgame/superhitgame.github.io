@@ -129,7 +129,8 @@ ScalableCanvas.prototype.clearBuffer = function(bufferFromX, bufferFromY, buffer
         y = bufferToY - margin;
     }
 
-    //this.context.clearRect(x, y, width, height);
+    this.context.clearRect(x, y, width, height);
+    /*
     var origColor = this.context.strokeStyle
     var origWidth = this.context.lineWidth;
     this.context.strokeStyle = colors.RED;
@@ -138,6 +139,7 @@ ScalableCanvas.prototype.clearBuffer = function(bufferFromX, bufferFromY, buffer
     this.context.stroke();
     this.context.strokeStyle = origColor;
     this.context.lineWidth = origWidth;
+    */
 };
 
 ScalableCanvas.prototype.clear = function() {
