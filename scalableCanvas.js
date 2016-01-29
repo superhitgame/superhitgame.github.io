@@ -14,7 +14,7 @@ function ScalableCanvas(canvas, config) {
 ScalableCanvas.prototype.updateSize = function() {
     this.canvas.height = this.canvas.clientHeight;
     this.canvas.width = this.canvas.clientWidth;
-    var scaleFactor = this.canvas.height / this.config.NORMALIZED_HEIGHT;
+    var scaleFactor = this.canvas.width / this.config.NORMALIZED_WIDTH;
     this.context.lineWidth = scaleFactor * this.config.NORMALIZED_PEN_WIDTH;
     this.context.strokeStyle = colors.DARK_GREY;
     this.context.lineJoin = "round";

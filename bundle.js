@@ -73,7 +73,7 @@
 	   
 	    // ////////////////////////////
 	  
-	    NORMALIZED_PEN_WIDTH: 0.03,
+	    NORMALIZED_PEN_WIDTH: 0.025,
 	 
 	    // ////////////////////////////
 
@@ -223,7 +223,7 @@
 	Board.prototype.updateSize = function() {
 	    this.buffer.updateSize();
 	    this.master.updateSize();
-	    var newScaleFactor = this.master.canvas.height / this.config.NORMALIZED_HEIGHT;
+	    var newScaleFactor = this.master.canvas.width / this.config.NORMALIZED_WIDTH;
 	    this.distanceThreshold = this.config.SAMPLE_DISTANCE_THRESHOLD * newScaleFactor;
 	    this.rescale(this.scaleFactor, newScaleFactor);
 	    this.scaleFactor = newScaleFactor;
@@ -345,7 +345,7 @@
 	ScalableCanvas.prototype.updateSize = function() {
 	    this.canvas.height = this.canvas.clientHeight;
 	    this.canvas.width = this.canvas.clientWidth;
-	    var scaleFactor = this.canvas.height / this.config.NORMALIZED_HEIGHT;
+	    var scaleFactor = this.canvas.width / this.config.NORMALIZED_WIDTH;
 	    this.context.lineWidth = scaleFactor * this.config.NORMALIZED_PEN_WIDTH;
 	    this.context.strokeStyle = colors.DARK_GREY;
 	    this.context.lineJoin = "round";
@@ -613,8 +613,11 @@
 	            self.drawingManager.movePen(e.pageX - outer.left, e.pageY - outer.top);
 	        });
 	        document.documentElement.addEventListener('mouseup', function(e){
-	            var outer = self.canvas.getBoundingClientRect();
-	            self.drawingManager.stopPen(e.pageX - outer.left, e.pageY - outer.top);
+	            if (self.mouseDown){
+	                var outer = self.canvas.getBoundingClientRect();
+	                self.drawingManager.stopPen(e.pageX - outer.left, e.pageY - outer.top);
+	                self.mouseDown = false;
+	            }
 	        }); 
 	        document.documentElement.addEventListener('mouseover', function(e){
 	            if (e.target == this && e.relatedTarget == null) {

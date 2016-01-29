@@ -34,8 +34,11 @@ function InputArea(canvas, drawingManager) {
             self.drawingManager.movePen(e.pageX - outer.left, e.pageY - outer.top);
         });
         document.documentElement.addEventListener('mouseup', function(e){
-            var outer = self.canvas.getBoundingClientRect();
-            self.drawingManager.stopPen(e.pageX - outer.left, e.pageY - outer.top);
+            if (self.mouseDown){
+                var outer = self.canvas.getBoundingClientRect();
+                self.drawingManager.stopPen(e.pageX - outer.left, e.pageY - outer.top);
+                self.mouseDown = false;
+            }
         }); 
         document.documentElement.addEventListener('mouseover', function(e){
             if (e.target == this && e.relatedTarget == null) {

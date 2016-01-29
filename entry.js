@@ -27,7 +27,7 @@ var config = {
    
     // ////////////////////////////
   
-    NORMALIZED_PEN_WIDTH: 0.03,
+    NORMALIZED_PEN_WIDTH: 0.025,
  
     // ////////////////////////////
 

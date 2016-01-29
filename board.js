@@ -43,7 +43,7 @@ Board.prototype.stopPen = function(x, y, reconstructing) {
 Board.prototype.updateSize = function() {
     this.buffer.updateSize();
     this.master.updateSize();
-    var newScaleFactor = this.master.canvas.height / this.config.NORMALIZED_HEIGHT;
+    var newScaleFactor = this.master.canvas.width / this.config.NORMALIZED_WIDTH;
     this.distanceThreshold = this.config.SAMPLE_DISTANCE_THRESHOLD * newScaleFactor;
     this.rescale(this.scaleFactor, newScaleFactor);
     this.scaleFactor = newScaleFactor;
