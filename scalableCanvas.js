@@ -8,28 +8,18 @@ function ScalableCanvas(canvas, config) {
     this.config = config;
     this.canvas = canvas;
     this.context = this.canvas.getContext("2d");
-    this.scaleFactor = 1;
     this.clearMargin = 1;
-}
-
-ScalableCanvas.prototype.initDrawingStyle = function() {
     this.context.strokeStyle = colors.DARK_GREY;
     this.context.lineJoin = "round";
     this.context.lineCap = "round";
-    this.context.lineWidth = this.scaleFactor * this.config.NORMALIZED_PEN_WIDTH;
 }
 
-ScalableCanvas.prototype.setWidth = function(width) {
-    this.canvas.width = width;
-    this.scaleFactor = width / this.config.NORMALIZED_WIDTH;
-    this.canvas.height = this.scaleFactor * this.config.NORMALIZED_HEIGHT;
-};
-
-ScalableCanvas.prototype.setHeight = function(height) {
-    this.canvas.height = height;
-    this.scaleFactor = height / this.config.NORMALIZED_HEIGHT;
-    this.canvas.width = this.scaleFactor * this.config.NORMALIZED_WIDTH;
-};
+ScalableCanvas.prototype.updateSize = function() {
+    this.canvas.height = this.canvas.clientHeight;
+    this.canvas.width = this.canvas.clientWidth;
+    var scaleFactor = this.canvas.height / this.config.NORMALIZED_HEIGHT;
+    this.context.lineWidth = scaleFactor * this.config.NORMALIZED_PEN_WIDTH;
+}
 
 ScalableCanvas.prototype.drawPoint = function(x, y) {
     this.context.beginPath();

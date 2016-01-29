@@ -45,10 +45,13 @@ window.onload = function(){
     var tempCanvas = document.getElementById('tempCanvas');
     var board = new Board(drawingCanvas, tempCanvas, config);
     var inputArea = new InputArea(tempCanvas, board);
-    var v = helper.viewport();
+    //var v = helper.viewport();
     //canvas.width  = v.width - 20;
-    board.setHeight(v.height - 200);
+    //board.setHeight(v.height - 200);
+    board.updateSize();
+    //board.setHeight(tempCanvas.height);
 
+    /*
     document.getElementById("widthButton").addEventListener("click", function() {
         board.setWidth(prompt("Set width:"));
     });
@@ -120,5 +123,6 @@ window.onload = function(){
         mousePoints.innerHTML = board.penX.length;
         board.reconstruct();
     };
+*/
 
 };

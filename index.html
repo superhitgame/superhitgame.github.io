@@ -2,40 +2,72 @@
 <html>
     <head>
         <meta charset="UTF-8">
-    	<meta name="viewport" content="width=device-width, initial-scale=1">
+        <!--
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        -->
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+	    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
+	    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+
         <title>Drawing tool test</title>
     </head>
 
     <body>
+        <!--
         <canvas id="drawingCanvas" width="1" height="1" style="border:solid black 1px; position:absolute">
             Your browser does not support canvas element.
         </canvas>
         <canvas id="tempCanvas" width="1" height="1" style="border:solid black 1px; position:absolute">
             Your browser does not support canvas element.
         </canvas>
-        <div style="position:absolute;bottom:0px">
-        <button id="widthButton">Set Width</button>
-        <button id="infoButton">Info</button>
-        <button id="roundButton">round</button>
-        <button id="clearButton">Clear</button>
-        Mouse points: <span id="mousePoints">0</span>
-        Sample points: <span id="samplePoints">0</span>
+        -->
 
-        <br>
-        Sample distance: <input id="sampleDistance" type="text"> </input>Sample when deviation from line larger than this distance (0 = sample each point, >0.2 = never sample)
-        <br>
-        Sample angle: <input id="sampleHook" type="text"> </input>Sample when angle smaller than this angle (0 = never sample, 180 = sample each point)
-        <br>
-        Straight edge angle: <input id="straightAngle" type="text"> </input>(draw straight lines when angle between sample points is smaller than this angle)
-        <br>
-        Pen width: <input id="penWidth" type="text"> </input>
-        <br>
-        Debug draw: <input id="debugDraw" type="checkbox"> </input>
-        Show mouse points: <input id="showMouse" type="checkbox"> </input>
-        Sample All Points: <input id="drawAll" type="checkbox"> </input>
-        <br>
-        <button id="update">Update</button>
+
+	<div id="global-container">
+	   <div id="header">
+			Header
+			<div class="room-code-container">
+				<span class="label">room code</span>
+				<span class="room-code">GTYLU</span>
+			</div>
+		</div>
+		<div id="content">
+			<div class="task-container">
+				<div class="task-description-title">Draw your portrait:</div>
+			</div>			
+			<div class="canvas-container">
+                <canvas id="drawingCanvas">
+                    Your browser does not support canvas element.
+                </canvas>
+                    <canvas id="tempCanvas">
+                </canvas>
+
+			</div>
+			<div class="drawing-controls-container">
+				<div class="controls-group">
+					<button class="btn-draw active"><i class="fa fa-pencil"></i> Draw</button>
+					<button class="btn-erase"><i class="fa fa-eraser"></i> Erase</button>
+				</div>
+				<div class="controls-group">
+					<button class="btn-size btn-size-small"><i class="fa fa-circle"></i></button>
+					<button class="btn-size btn-size-medium active"><i class="fa fa-circle"></i></button>
+					<button class="btn-size btn-size-large"><i class="fa fa-circle"></i></button>
+					<button class="btn-color"><i class="fa fa-square"></i></button>
+				</div>
+				<div class="controls-group">
+					<button class="btn-trash"><i class="fa fa-trash"></i> Clear</button>
+				</div>
+			</div>
+		</div>
+		<div id="footer">
+			<div class="state-controls-container">
+				<button class="btn-cancel"><i class="fa fa-times"></i> Cancel</button>
+				<button class="btn-next"><i class="fa fa-check"></i> Ready</button>
+			</div>
+		</div>
+
+        </div>
+
         <script type="text/javascript" src="bundle.js" charset="utf-8"></script>
-        <div>
     </body>
 </html>

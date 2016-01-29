@@ -10,6 +10,7 @@ function Board(drawingCanvas, tempCanvas, config) {
     this.config = config;
     this.buffer = new ScalableCanvas(tempCanvas, config);
     this.master = new ScalableCanvas(drawingCanvas, config);
+    this.scaleFactor = 1;
     this.reset();
 }
 
@@ -22,6 +23,7 @@ Board.prototype.reset = function() {
 };
 
 Board.prototype.startPen = function(x, y, reconstructing) {
+    logger.log(x + " - " + y);
     this.addPoint(x, y, false);
     this.isDrawing = true;
 };
@@ -38,25 +40,15 @@ Board.prototype.stopPen = function(x, y, reconstructing) {
     this.isDrawing = false;
 };
 
-Board.prototype.setWidth = function(width) {
-    var originalScaleFactor = this.master.scaleFactor;
-    this.buffer.setWidth(width);
-    this.master.setWidth(width);
-    var newScaleFactor = this.master.scaleFactor;
+Board.prototype.updateSize = function() {
+    this.buffer.updateSize();
+    this.master.updateSize();
+    var newScaleFactor = this.master.canvas.height / this.config.NORMALIZED_HEIGHT;
     this.distanceThreshold = this.config.SAMPLE_DISTANCE_THRESHOLD * newScaleFactor;
-    this.rescale(originalScaleFactor, newScaleFactor);
+    this.rescale(this.scaleFactor, newScaleFactor);
+    this.scaleFactor = newScaleFactor;
     this.redraw();
-};
-
-Board.prototype.setHeight = function(height) {
-    var originalScaleFactor = this.master.scaleFactor;
-    this.buffer.setHeight(height);
-    this.master.setHeight(height);
-    var newScaleFactor = this.master.scaleFactor;
-    this.distanceThreshold = this.config.SAMPLE_DISTANCE_THRESHOLD * newScaleFactor;
-    this.rescale(originalScaleFactor, newScaleFactor);
-    this.redraw();
-};
+}
 
 Board.prototype.addPoint = function(x, y, dragging, close) {
     if(typeof x !== 'undefined' &&
@@ -110,8 +102,6 @@ Board.prototype.draw = function(index, close) {
 }
 
 Board.prototype.redraw = function() {
-    this.master.initDrawingStyle();
-    this.buffer.initDrawingStyle();
     this.master.clear();
     this.buffer.clear();
     this.master.drawSmoothLines(this.penX, this.penY, this.penDragging);
@@ -132,14 +122,6 @@ Board.prototype.reconstruct = function() {
     document.getElementById("samplePoints").innerHTML = filtered.x.length;
 };
 
-Board.prototype.normalize = function(value) {
-  return value / this.master.scaleFactor;
-};
-
-Board.prototype.denormalize = function(value) {
-  return value * this.master.scaleFactor;
-};
-
 Board.prototype.rescale = function(origFactor, newFactor) {
     var factor = newFactor / origFactor;
     for(var i = 0; i < this.penX.length; i++){
@@ -147,7 +129,6 @@ Board.prototype.rescale = function(origFactor, newFactor) {
         this.penY[i] = factor * this.penY[i];
     }
 };
-
 
 Board.prototype.round = function(){
     var normX = 1 / this.config.NORMALIZED_WIDTH / this.config.NORMALIZED_WIDTH * this.config.ROUNDING_FACTOR_X;

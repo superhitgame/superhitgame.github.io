@@ -91,10 +91,13 @@
 	    var tempCanvas = document.getElementById('tempCanvas');
 	    var board = new Board(drawingCanvas, tempCanvas, config);
 	    var inputArea = new InputArea(tempCanvas, board);
-	    var v = helper.viewport();
+	    //var v = helper.viewport();
 	    //canvas.width  = v.width - 20;
-	    board.setHeight(v.height - 200);
+	    //board.setHeight(v.height - 200);
+	    board.updateSize();
+	    //board.setHeight(tempCanvas.height);
 
+	    /*
 	    document.getElementById("widthButton").addEventListener("click", function() {
 	        board.setWidth(prompt("Set width:"));
 	    });
@@ -166,6 +169,7 @@
 	        mousePoints.innerHTML = board.penX.length;
 	        board.reconstruct();
 	    };
+	*/
 
 	};
 
@@ -186,6 +190,7 @@
 	    this.config = config;
 	    this.buffer = new ScalableCanvas(tempCanvas, config);
 	    this.master = new ScalableCanvas(drawingCanvas, config);
+	    this.scaleFactor = 1;
 	    this.reset();
 	}
 
@@ -198,6 +203,7 @@
 	};
 
 	Board.prototype.startPen = function(x, y, reconstructing) {
+	    logger.log(x + " - " + y);
 	    this.addPoint(x, y, false);
 	    this.isDrawing = true;
 	};
@@ -214,25 +220,15 @@
 	    this.isDrawing = false;
 	};
 
-	Board.prototype.setWidth = function(width) {
-	    var originalScaleFactor = this.master.scaleFactor;
-	    this.buffer.setWidth(width);
-	    this.master.setWidth(width);
-	    var newScaleFactor = this.master.scaleFactor;
+	Board.prototype.updateSize = function() {
+	    this.buffer.updateSize();
+	    this.master.updateSize();
+	    var newScaleFactor = this.master.canvas.height / this.config.NORMALIZED_HEIGHT;
 	    this.distanceThreshold = this.config.SAMPLE_DISTANCE_THRESHOLD * newScaleFactor;
-	    this.rescale(originalScaleFactor, newScaleFactor);
+	    this.rescale(this.scaleFactor, newScaleFactor);
+	    this.scaleFactor = newScaleFactor;
 	    this.redraw();
-	};
-
-	Board.prototype.setHeight = function(height) {
-	    var originalScaleFactor = this.master.scaleFactor;
-	    this.buffer.setHeight(height);
-	    this.master.setHeight(height);
-	    var newScaleFactor = this.master.scaleFactor;
-	    this.distanceThreshold = this.config.SAMPLE_DISTANCE_THRESHOLD * newScaleFactor;
-	    this.rescale(originalScaleFactor, newScaleFactor);
-	    this.redraw();
-	};
+	}
 
 	Board.prototype.addPoint = function(x, y, dragging, close) {
 	    if(typeof x !== 'undefined' &&
@@ -286,8 +282,6 @@
 	}
 
 	Board.prototype.redraw = function() {
-	    this.master.initDrawingStyle();
-	    this.buffer.initDrawingStyle();
 	    this.master.clear();
 	    this.buffer.clear();
 	    this.master.drawSmoothLines(this.penX, this.penY, this.penDragging);
@@ -308,14 +302,6 @@
 	    document.getElementById("samplePoints").innerHTML = filtered.x.length;
 	};
 
-	Board.prototype.normalize = function(value) {
-	  return value / this.master.scaleFactor;
-	};
-
-	Board.prototype.denormalize = function(value) {
-	  return value * this.master.scaleFactor;
-	};
-
 	Board.prototype.rescale = function(origFactor, newFactor) {
 	    var factor = newFactor / origFactor;
 	    for(var i = 0; i < this.penX.length; i++){
@@ -323,7 +309,6 @@
 	        this.penY[i] = factor * this.penY[i];
 	    }
 	};
-
 
 	Board.prototype.round = function(){
 	    var normX = 1 / this.config.NORMALIZED_WIDTH / this.config.NORMALIZED_WIDTH * this.config.ROUNDING_FACTOR_X;
@@ -354,28 +339,18 @@
 	    this.config = config;
 	    this.canvas = canvas;
 	    this.context = this.canvas.getContext("2d");
-	    this.scaleFactor = 1;
 	    this.clearMargin = 1;
-	}
-
-	ScalableCanvas.prototype.initDrawingStyle = function() {
 	    this.context.strokeStyle = colors.DARK_GREY;
 	    this.context.lineJoin = "round";
 	    this.context.lineCap = "round";
-	    this.context.lineWidth = this.scaleFactor * this.config.NORMALIZED_PEN_WIDTH;
 	}
 
-	ScalableCanvas.prototype.setWidth = function(width) {
-	    this.canvas.width = width;
-	    this.scaleFactor = width / this.config.NORMALIZED_WIDTH;
-	    this.canvas.height = this.scaleFactor * this.config.NORMALIZED_HEIGHT;
-	};
-
-	ScalableCanvas.prototype.setHeight = function(height) {
-	    this.canvas.height = height;
-	    this.scaleFactor = height / this.config.NORMALIZED_HEIGHT;
-	    this.canvas.width = this.scaleFactor * this.config.NORMALIZED_WIDTH;
-	};
+	ScalableCanvas.prototype.updateSize = function() {
+	    this.canvas.height = this.canvas.clientHeight;
+	    this.canvas.width = this.canvas.clientWidth;
+	    var scaleFactor = this.canvas.height / this.config.NORMALIZED_HEIGHT;
+	    this.context.lineWidth = scaleFactor * this.config.NORMALIZED_PEN_WIDTH;
+	}
 
 	ScalableCanvas.prototype.drawPoint = function(x, y) {
 	    this.context.beginPath();

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+    	<meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Drawing tool test</title>
+    </head>
+
+    <body>
+        <canvas id="drawingCanvas" width="1" height="1" style="border:solid black 1px; position:absolute">
+            Your browser does not support canvas element.
+        </canvas>
+        <canvas id="tempCanvas" width="1" height="1" style="border:solid black 1px; position:absolute">
+            Your browser does not support canvas element.
+        </canvas>
+        <div style="position:absolute;bottom:0px">
+        <button id="widthButton">Set Width</button>
+        <button id="infoButton">Info</button>
+        <button id="roundButton">round</button>
+        <button id="clearButton">Clear</button>
+        Mouse points: <span id="mousePoints">0</span>
+        Sample points: <span id="samplePoints">0</span>
+
+        <br>
+        Sample distance: <input id="sampleDistance" type="text"> </input>Sample when deviation from line larger than this distance (0 = sample each point, >0.2 = never sample)
+        <br>
+        Sample angle: <input id="sampleHook" type="text"> </input>Sample when angle smaller than this angle (0 = never sample, 180 = sample each point)
+        <br>
+        Straight edge angle: <input id="straightAngle" type="text"> </input>(draw straight lines when angle between sample points is smaller than this angle)
+        <br>
+        Pen width: <input id="penWidth" type="text"> </input>
+        <br>
+        Debug draw: <input id="debugDraw" type="checkbox"> </input>
+        Show mouse points: <input id="showMouse" type="checkbox"> </input>
+        Sample All Points: <input id="drawAll" type="checkbox"> </input>
+        <br>
+        <button id="update">Update</button>
+        <script type="text/javascript" src="bundle.js" charset="utf-8"></script>
+        <div>
+    </body>
+</html>

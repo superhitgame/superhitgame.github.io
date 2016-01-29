@@ -1,0 +1,297 @@
+/**
+ * Global
+ */
+
+body,
+html {
+	padding: 0;
+	margin: 0;
+	overflow: hidden;
+	height: 100%;	
+}
+
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 5vw;
+}
+
+@media (min-aspect-ratio: 9/16) {
+	body {
+		font-size: 2.8125vh;
+	}
+}
+
+input,
+button {
+	box-sizing: border-box;
+}
+
+button {
+	font-size: 1em;
+	padding: .25em;
+	border: none;
+	cursor: pointer;
+	-webkit-appearance: none;
+    border-radius: 0;
+}
+
+#global-container {
+	box-sizing: border-box;
+	padding: .5em;
+	margin: 0 auto;
+	background-color: rgba(255,0,0,.3);
+	width: 100%;
+	height: 100%;
+	max-width: 56.25vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+#header,
+#footer,
+#content {
+	position: relative;
+}
+
+.menu-vertical button {
+	display: block;
+	clear: both;
+	width: 100%;
+	margin-bottom: .5em;
+}
+
+.menu-vertical button:last-child {
+	margin-bottom: 0;
+}
+
+.room-code-container {
+	position: absolute;
+	right: 0;
+	top: 0;
+	padding: .15em .25em;
+	border: 1px solid black;
+	border-radius: .5em;
+}
+
+.room-code-container .label {
+	font-size: .625em;
+	display: block;
+	text-align: center;
+}
+
+.room-code-container .room-code {
+	display: block;
+	text-align: center;
+	font-size: 1em;
+}
+
+.task-clock {
+	border-radius: 100%;
+	border: 2px solid black;
+	width: 1.5em;
+	height: 1.5em;
+	line-height: 1.5;
+	text-align: center;
+}
+
+
+/**
+ * Enter name/code state. Join game state.
+ */
+.form-join-game button,
+.form-join-game input,
+.form-create-game  button,
+.form-create-game input {
+	display: block;
+	clear: both;
+	width: 100%;
+	margin-bottom: .5em;
+}
+
+
+/**
+ * Lobby state
+ */
+
+.players-list-container .label {
+	display: block;
+	padding: 0 0 .5em 0;
+}
+
+.players-list {
+	display: block;
+	clear: both;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.players-list li {
+	box-sizing: border-box;
+	display: block;
+	float: left;
+	width: 33.3333%;
+	padding: 0 .5em;
+	margin: 0 0 1em 0;
+	text-align: center;
+}
+
+.players-list li:nth-child(3n+1) {
+	clear: left;
+}
+
+.players-list .name {
+	display: block;
+	font-size: .75em;
+
+	/* Careful, this breaks the word wherever it is without a hyphen */
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+
+	/* Adds a hyphen where the word breaks */
+	-webkit-hyphens: auto;
+	-ms-hyphens: auto;
+	-moz-hyphens: auto;
+	hyphens: auto;
+}
+
+.portrait-container {
+	margin: 0 auto;
+	display: block;
+	position: relative;
+	width: 3em;
+}
+
+.portrait-container .inner {
+	display: block;
+	position: relative;
+	height: 0;
+	padding-bottom: 120%;
+}
+
+.portrait-container img {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.invite-instructions {
+	clear: both;
+	font-size: .75em;
+	padding: 1em 4em 0;
+}
+
+
+/**
+ * State draw
+ */
+
+.task-container {
+	position: relative;
+	padding-bottom: .5em;
+	padding-right: 2.5em;
+}
+
+.task-description-title {
+	font-size: .75em;
+}
+
+.task-container .task-clock {
+	position: absolute;
+	right: 0;
+	bottom: .25em;
+}
+
+
+/**
+ * State waiting room
+ */
+
+.state-waiting-room .task-clock-container {
+	font-size: 2em;
+}
+
+.state-waiting-room .task-clock {
+	margin: 0 auto;
+}
+
+
+/**
+ * State describe drawing
+ */
+
+.state-describe-drawing .description {
+	width: 100%;
+	margin: .5em 0 0 0;
+}
+
+
+/**
+ * Drawing canvas
+ */
+
+.canvas-container {
+	position: relative;
+	width: 100%;
+	height: 0;
+	padding-bottom: 120%;
+	background-color: rgba(0,255,0,.3);
+}
+
+.canvas-container canvas {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
+.drawing-controls-container {
+	padding-top: .5em;
+	display: flex;
+	justify-content: space-between;
+}
+
+.controls-group button {
+	font-size: .75em;
+	display: block;
+	float: left;
+	margin-right: .25em;
+}
+
+.controls-group button:last-child {
+	margin-right: 0;
+}
+
+.controls-group button.active {
+	font-size: .75em;
+	display: block;
+	float: left;
+	margin-right: .25em;
+	border-bottom: 2px solid black;
+}
+
+.btn-size i {
+	vertical-align: middle;
+}
+
+.btn-size-small i {
+	font-size: .5em;
+	padding: 0 .5em;
+}
+
+.btn-size-medium i {
+	font-size: .75em;
+	padding: 0 .18em;
+}
+
+.btn-size-large i {
+	font-size: 1em;
+}
+
+.state-controls-container {
+	text-align: center;
+}
