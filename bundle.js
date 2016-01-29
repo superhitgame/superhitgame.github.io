@@ -340,9 +340,6 @@
 	    this.canvas = canvas;
 	    this.context = this.canvas.getContext("2d");
 	    this.clearMargin = 1;
-	    this.context.strokeStyle = colors.DARK_GREY;
-	    this.context.lineJoin = "round";
-	    this.context.lineCap = "round";
 	}
 
 	ScalableCanvas.prototype.updateSize = function() {
@@ -350,6 +347,9 @@
 	    this.canvas.width = this.canvas.clientWidth;
 	    var scaleFactor = this.canvas.height / this.config.NORMALIZED_HEIGHT;
 	    this.context.lineWidth = scaleFactor * this.config.NORMALIZED_PEN_WIDTH;
+	    this.context.strokeStyle = colors.DARK_GREY;
+	    this.context.lineJoin = "round";
+	    this.context.lineCap = "round";
 	}
 
 	ScalableCanvas.prototype.drawPoint = function(x, y) {
