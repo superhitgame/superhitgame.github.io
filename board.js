@@ -11,6 +11,7 @@ function Board(drawingCanvas, tempCanvas, config) {
     this.buffer = new ScalableCanvas(tempCanvas, config);
     this.master = new ScalableCanvas(drawingCanvas, config);
     this.scaleFactor = 1;
+    drawingCanvas.addEventListener('resize', helper.debounce(this.updateSize, 250));
     this.reset();
 }
 
